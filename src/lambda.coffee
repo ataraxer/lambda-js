@@ -56,6 +56,12 @@ _ =
 	last: (xs) -> xs[xs.length-1]
 	init: (xs) -> xs[0...-1]
 
+	take: def (n, xs) ->
+		xs[..(n-1)]
+
+	drop: def (n, xs) ->
+		xs[n..]
+
 
 	equals: def (a, b) -> a is b
 
