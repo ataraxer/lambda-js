@@ -33,269 +33,262 @@ monoid = (id) -> (op) ->
 	f.id = id; f
 
 
-_ =
-	ncurry: ncurry
-	curry: curry
+_ = {}
 
-	map: def (f, xsd) ->
-		if is_hash xsd
-			_.dict ([k, (f v, k)] for k, v of xsd)
-		else f x for x in xsd
+_.ncurry = ncurry
+_.curry = curry
 
-	flat_map: def (f, xs) ->
-		_.flatten (_.map f, xs)
+_.map = def (f, xsd) ->
+	if is_hash xsd
+		_.dict ([k, (f v, k)] for k, v of xsd)
+	else f x for x in xsd
 
-	filter: def (f, xsd) ->
-		predicate = ([k, v]) -> f v, k
-		if is_hash xsd
-			_.dict (_.filter predicate, (_.items xsd))
-		else x for x in xsd when f x
+_.flat_map = def (f, xs) ->
+	_.flatten (_.map f, xs)
 
-	head: (xs) -> xs[0]
-	tail: (xs) -> xs[1..-1]
-	last: (xs) -> xs[xs.length-1]
-	init: (xs) -> xs[0...-1]
+_.filter = def (f, xsd) ->
+	predicate = ([k, v]) -> f v, k
+	if is_hash xsd
+		_.dict (_.filter predicate, (_.items xsd))
+	else x for x in xsd when f x
 
-	take: def (n, xs) ->
-		xs[..(n-1)]
+_.head = (xs) -> xs[0]
+_.tail = (xs) -> xs[1..-1]
+_.last = (xs) -> xs[xs.length-1]
+_.init = (xs) -> xs[0...-1]
 
-	drop: def (n, xs) ->
-		xs[n..]
+_.take = def (n, xs) ->
+	xs[..(n-1)]
+
+_.drop = def (n, xs) ->
+	xs[n..]
 
 
-	equals: def (a, b) -> a is b
+_.equals = def (a, b) -> a is b
 
-	positive: (x) -> x > 0
-	negative: (x) -> x < 0
+_.positive = (x) -> x > 0
+_.negative = (x) -> x < 0
 
-	push: def (x, xs) ->
-		_.concat xs, [x]
+_.push = def (x, xs) ->
+	_.concat xs, [x]
 
-	length: (xsd) ->
-		if is_hash xsd
-			_.length (_.keys xsd)
-		else xsd.length
+_.length = (xsd) ->
+	if is_hash xsd
+		_.length (_.keys xsd)
+	else xsd.length
 
-	keys: (xd) ->
-		k for k, v of xd
+_.keys = (xd) ->
+	k for k, v of xd
 
-	values: (xd) ->
-		v for k, v of xd
+_.values = (xd) ->
+	v for k, v of xd
 
-	items: (xd) ->
-		[k, v] for k, v of xd
+_.items = (xd) ->
+	[k, v] for k, v of xd
 
-	dot: def (k, xd) ->
-		xd[k]
+_.dot = def (k, xd) ->
+	xd[k]
 
-	select: def (f, xd) ->
-		predicate = ([k, v]) -> f k, v
-		_.dict (_.filter predicate, (_.items xd))
+_.select = def (f, xd) ->
+	predicate = ([k, v]) -> f k, v
+	_.dict (_.filter predicate, (_.items xd))
 
-	omit: def (f, xd) ->
-		_.select (_.not f), xd
+_.omit = def (f, xd) ->
+	_.select (_.not f), xd
 
-	contains: def (ks, xsd) ->
-		xs = if is_hash xsd
-			_.keys xsd
-		else xsd
-		if typeof ks is 'string'
-			ks in xs
-		else
-			test = (k) -> k in xs
-			_.all test, ks
+_.contains = def (ks, xsd) ->
+	xs = if is_hash xsd
+		_.keys xsd
+	else xsd
+	if typeof ks is 'string'
+		ks in xs
+	else
+		test = (k) -> k in xs
+		_.all test, ks
 
-	in: def (xsd, v) ->
-		v in (if is_hash xsd then _.keys xsd else xsd)
+_.in = def (xsd, v) ->
+	v in (if is_hash xsd then _.keys xsd else xsd)
 
-	join: def (v, xs) ->
-		xs.join v
+_.join = def (v, xs) ->
+	xs.join v
 
-	clone: (obj) ->
-		# XXX: JSON.parse(JSON.stringify(xsd))
-		# doesn't copies function but may be faster
-		if obj is null or typeof obj isnt 'object'
-			obj
-		else
-			copy = obj.constructor()
-			for k, v of obj when v?
-				copy[k] = _.clone v
-			copy
+_.clone = (obj) ->
+	# XXX: JSON.parse(JSON.stringify(xsd))
+	# doesn't copies function but may be faster
+	if obj is null or typeof obj isnt 'object'
+		obj
+	else
+		copy = obj.constructor()
+		for k, v of obj when v?
+			copy[k] = _.clone v
+		copy
 
-	reverse: (xs) ->
-		(_.clone xs).reverse()
+_.reverse = (xs) ->
+	(_.clone xs).reverse()
 
 # ==== MONOIDS ====
+_.add = (monoid 0) (a, b) ->
+	a + b
 
-	add: (monoid 0) (a, b) ->
-		a + b
+_.multiply = (monoid 1) (a, b) ->
+	a * b
 
-	multiply: (monoid 1) (a, b) ->
-		a * b
+_.concat = (monoid []) (xs, ys) ->
+	Array.prototype.concat xs, ys
 
-	concat: (monoid []) (xs, ys) ->
-		Array.prototype.concat xs, ys
+_.and = (monoid true) (a, b) ->
+	a and b
 
-	and: (monoid true) (a, b) ->
-		a and b
+_.or = (monoid false) (a, b) ->
+	a or b
 
-	or: (monoid false) (a, b) ->
-		a or b
+_.max = (monoid -Infinity) (a, b) ->
+	Math.max(a, b)
 
-	max: (monoid -Infinity) (a, b) ->
-		Math.max(a, b)
+_.min = (monoid Infinity) (a, b) ->
+	Math.min(a, b)
 
-	min: (monoid Infinity) (a, b) ->
-		Math.min(a, b)
+_.extend = (monoid {}) (a, b) ->
+	_.dict (_.reduce _.concat, (_.map _.items, [a, b]))
 
-	extend: (monoid {}) (a, b) ->
-		_.dict (_.reduce _.concat, (_.map _.items, [a, b]))
-
-	combine: (monoid {}) (a, b) ->
-		keys = _.uniq (_.flat_map _.keys, [a, b])
-		values = (k) ->
-			ak = _.keys a
-			bk = _.keys b
-			if k in ak and k in bk
-				[k, Array.prototype.concat a[k], b[k]]
-			else if k in ak
-				[k, Array.prototype.concat [], a[k]]
-			else if k in bk
-				[k, Array.prototype.concat [], b[k]]
-			else [k, []]
-		#values = (k) -> [k, Array.prototype.concat a[k], b[k]]
-		_.dict (_.map values, keys)
-
+_.combine = (monoid {}) (a, b) ->
+	keys = _.uniq (_.flat_map _.keys, [a, b])
+	values = (k) ->
+		ak = _.keys a
+		bk = _.keys b
+		if k in ak and k in bk
+			[k, Array.prototype.concat a[k], b[k]]
+		else if k in ak
+			[k, Array.prototype.concat [], a[k]]
+		else if k in bk
+			[k, Array.prototype.concat [], b[k]]
+		else [k, []]
+	_.dict (_.map values, keys)
 # ==== END:MONOIDS ====
 
-	# reduce :: (Monoid m) => m -> [a] -> a
-	reduce: def (m, xsd) ->
-		xs = if is_hash xsd then _.values xsd else xsd
-		if not xs.reduce? then return m.id
-		if _.length xsd > 0
-			xs.reduce m
-		else
-			xs.reduce m, m.id
+_.reduce = def (m, xsd) ->
+	xs = if is_hash xsd then _.values xsd else xsd
+	if not xs.reduce? then return m.id
+	if _.length xsd > 0
+		xs.reduce m
+	else
+		xs.reduce m, m.id
 
 # ==== REDUCERS ====
+_.sum = (xsd) ->
+	_.reduce _.add, xsd
 
-	sum: (xsd) ->
-		_.reduce _.add, xsd
+_.product = (xsd) ->
+	_.reduce _.multiply, xsd
 
-	product: (xsd) ->
-		_.reduce _.multiply, xsd
+_.flatten = (xs) ->
+	if (is_hash _.head(xs)) and (_.all is_hash, _.filter(_.equals(undefined), xs))
+		_.reduce _.extend, xs
+	else
+		_.reduce _.concat, xs
 
-	flatten: (xs) ->
-		if (is_hash _.head(xs)) and (_.all is_hash, _.filter(_.equals(undefined), xs))
-			_.reduce _.extend, xs
-		else
-			_.reduce _.concat, xs
+_.all = def (f, xs) ->
+	_.reduce _.and, (_.map f, xs)
 
-	all: def (f, xs) ->
-		_.reduce _.and, (_.map f, xs)
+_.any = def (f, xs) ->
+	_.reduce _.or, (_.map f, xs)
 
-	any: def (f, xs) ->
-		_.reduce _.or, (_.map f, xs)
+_.biggest = (xs) ->
+	_.reduce _.max, xs
 
-	biggest: (xs) ->
-		_.reduce _.max, xs
+_.smallest = (xs) ->
+	_.reduce _.min, xs
 
-	smallest: (xs) ->
-		_.reduce _.min, xs
+_.gather = (xs) ->
+	_.reduce _.combine, xs
 
-	gather: (xs) ->
-		_.reduce _.combine, xs
-
-	sequence: (xs) ->
-		keys = _.uniq (_.flat_map _.keys, xs)
-		fill = _.fill keys
-		reducer = (agg, x) ->
-			_.combine (fill agg), (fill x)
-		xs.reduce reducer
-
+_.sequence = (xs) ->
+	keys = _.uniq (_.flat_map _.keys, xs)
+	fill = _.fill keys
+	reducer = (agg, x) ->
+		_.combine (fill agg), (fill x)
+	xs.reduce reducer
 # ==== END:REDUCERS ====
 
-	average: (xs) ->
-		if (_.length xs) == 0 then 0
-		else (_.sum xs) / (_.length xs)
+_.average = (xs) ->
+	if (_.length xs) == 0 then 0
+	else (_.sum xs) / (_.length xs)
 
-	not: (f) -> (args...) -> not (f args...)
+_.not = (f) -> (args...) -> not (f args...)
 
-	is_number: (n) ->
-		(not isNaN (_.float n)) and (isFinite n)
+_.is_number = (n) ->
+	(not isNaN (_.float n)) and (isFinite n)
 
-	sort: (xs) ->
+_.sort = (xs) ->
+	numbers = (_.map _.number) ((_.filter _.is_number) xs)
+	strings = (_.filter (_.not _.is_number)) xs
 
-		numbers = (_.map _.number) ((_.filter _.is_number) xs)
-		strings = (_.filter (_.not _.is_number)) xs
+	sorted_numbers = numbers.sort (a, b) ->
+		a - b
+	sorted_strings = strings.sort (a, b) ->
+		a.localeCompare(b)
 
-		sorted_numbers = numbers.sort (a, b) ->
-			a - b
-		sorted_strings = strings.sort (a, b) ->
-			a.localeCompare(b)
+	(_.concat sorted_numbers, sorted_strings)
 
-		(_.concat sorted_numbers, sorted_strings)
+_.pipe = (fs...) -> (a) ->
+	flow = (monoid a) (agg, _f) -> _f agg
+	_.reduce flow, fs
 
-	pipe: (fs...) -> (a) ->
-		flow = (monoid a) (agg, _f) -> _f agg
-		_.reduce flow, fs
+_.compose = (fs...) ->
+	_.pipe (_.reverse fs)...
 
-	compose: (fs...) ->
-		_.pipe (_.reverse fs)...
+_.apply = def (f, xs) ->
+	f.apply undefined, xs
 
-	apply: def (f, xs) ->
-		f.apply undefined, xs
+_.relate = (f, a, b) ->
+	action = (f_, a_, b_) ->
+		_.map (_.apply f_), _.sequence [a_, b_]
+	if arguments.length >= 3
+		action f, a, b
+	else (a, b) -> action f, a, b
 
-	relate: (f, a, b) ->
-		action = (f_, a_, b_) ->
-			_.map (_.apply f_), _.sequence [a_, b_]
-		if arguments.length >= 3
-			action f, a, b
-		else (a, b) -> action f, a, b
+_.group_by = def (f, xs) ->
+	result = {}
+	for x in xs
+		key = f x
+		result[key] = result[key] or []
+		result[key].push x
+	result
 
-	group_by: def (f, xs) ->
-		result = {}
-		for x in xs
-			key = f x
-			result[key] = result[key] or []
-			result[key].push x
-		result
+_.range = (a, b, step = 1) ->
+	if b? then x for x in [a..b] by step
+	else [0...a]
 
-	range: (a, b, step = 1) ->
-		if b? then x for x in [a..b] by step
-		else [0...a]
+_.replace = (a, b) -> (x) ->
+	if x is a then b else x
 
-	replace: (a, b) -> (x) ->
-		if x is a then b else x
+_.uniq = (xs) ->
+	f = (x) -> [x, 1]
+	_.keys _.dict (_.map f, xs)
 
-	uniq: (xs) ->
-		f = (x) -> [x, 1]
-		_.keys _.dict (_.map f, xs)
+_.fill = def (xs, xd) ->
+	f = (x) -> [x, null]
+	fillers = _.dict (_.map f, xs)
+	_.extend fillers, xd
 
-	fill: def (xs, xd) ->
-		f = (x) -> [x, null]
-		fillers = _.dict (_.map f, xs)
-		_.extend fillers, xd
+_.dict = (xs) ->
+	xd = {}; xd[k] = v for [k, v] in xs; xd
 
-	dict: (xs) ->
-		xd = {}; xd[k] = v for [k, v] in xs; xd
-
-	def: def
+_.def = def
 
 # ==== PARSERS ====
-	id: (x) -> x
+_.id = (x) -> x
 
-	int: (x) -> parseInt x, 10
+_.int = (x) -> parseInt x, 10
 
-	float: (x) -> parseFloat x, 10
+_.float = (x) -> parseFloat x, 10
 
-	number: (x) -> _.float x
-
+_.number = (x) -> _.float x
 # ==== END:PARSERS ====
 
-	empty: (xsd) ->
-		_.length xsd is 0
+_.empty = (xsd) ->
+	_.length xsd is 0
 
-	print: (x) ->
-		console.log x
-		return x
+_.print = (x) ->
+	console.log x
+	return x
