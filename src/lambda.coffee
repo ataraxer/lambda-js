@@ -292,3 +292,5 @@ _.empty = (xsd) ->
 _.print = (x) ->
 	console.log x
 	return x
+
+module.exports = exports = _
