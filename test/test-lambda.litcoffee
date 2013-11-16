@@ -33,6 +33,7 @@ Data structures manipulations
 
 	describe 'map', ->
 		f = (x) -> x + 1
+		all_nan = _.all isNaN
 
 		it 'should map function over every element of array', ->
 			xs = [1, 2, 3, 4, 5]
@@ -48,8 +49,8 @@ Data structures manipulations
 
 		it 'should not fail if functions returns unexpected values', ->
 			(_.map f, ['a']).should.deep.equal ['a1']
-			(_.map f, [undefined]).should.deep.equal [NaN]
-			(_.map ((x) -> x / 1), ['a']).should.deep.equal [NaN]
+			(all_nan _.map f, [undefined]).should.be.true
+			(all_nan _.map ((x) -> x / 1), ['a']).should.be.true
 
 		it 'should return empty array if the second argument is not an array or an object', ->
 			(_.map f, 1).should.deep.equal []
