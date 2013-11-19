@@ -113,6 +113,15 @@ Data structures manipulations
 			(_.contains ['bar', 'baz'], xs).should.equal false
 
 
+	describe 'in', -> 
+		xs = ['foo', 'bar', 'apple', 'orange']
+		kv = { foo: 1, bar: 2, apple: 3, orange: 4 }
+
+		it 'should check if array contains item', ->
+			(_.in xs, 'bar').should.equal true
+			(_.in xs, 'baz').should.equal false
+
+
 	describe 'clone', ->
 		original_source = {a: 1, b: {foo: 'bar', baz: [1, 2, 3]}}
 
