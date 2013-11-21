@@ -52,6 +52,10 @@ _.filter = def (f, xsd) ->
 		_.dict (_.filter predicate, (_.items xsd))
 	else x for x in xsd when f x
 
+_.find = def (f, xs) ->
+	for x in xs
+		if f(x) then return x
+
 _.head = (xs) -> xs[0]
 _.tail = (xs) -> xs[1..-1]
 _.last = (xs) -> xs[xs.length-1]
