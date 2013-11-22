@@ -1,0 +1,69 @@
+Lambda overview:
+	- ncurry
+	- curry
+	- map: #tested
+	- flat_map: #tested
+	- filter: #tested
+	- find: #tested
+	- head: #tested
+	- tail: #tested
+	- last: #tested
+	- init: #tested
+	- take
+	- drop
+	- equals
+	- positive
+	- negative
+	- push
+	- length
+	- keys
+	- values
+	- items
+	- dot
+	- select: #tested
+	- omit: #tested
+	- contains: #tested
+	- in: #tested
+	- join
+	- clone: #tested
+	- reverse
+	- add: #tested
+	- multiply: #tested
+	- concat: #tested
+	- and: #tested
+	- or: #tested
+	- max: #tested
+	- min: #tested
+	- extend: #tested
+	- combine: #tested
+	- reduce
+	- sum: #tested
+	- product: #tested
+	- flatten: #tested
+	- all: #tested
+	- any: #tested
+	- biggest: #tested
+	- smallest: #tested
+	- gather: #tested
+	- sequence: #tested
+	- average: #tested
+	- not
+	- is_number
+	- sort
+	- pipe: #tested
+	- compose: #tested
+	- apply
+	- relate: #tested
+	- group_by: #tested
+	- range
+	- replace
+	- uniq
+	- fill
+	- dict
+	- def
+	- id
+	- int
+	- float
+	- number
+	- empty
+	- print
