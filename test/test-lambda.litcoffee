@@ -23,9 +23,9 @@ Helpers
 		a = 1; b = 2
 
 		it 'should auto-curry functions', ->
-			#((_.def f)(a)(b)).should.be.deep.equal [a, b]
-			#((_.def f)(a)(b)).should.be.deep.equal (f a, b)
-			#((_.def f)(a, b)).should.be.deep.equal (_.def f)(a)(b)
+			((_.def f)(a)(b)).should.be.deep.equal [a, b]
+			((_.def f)(a)(b)).should.be.deep.equal (f a, b)
+			((_.def f)(a, b)).should.be.deep.equal (_.def f)(a)(b)
 		
 
 Data structures manipulations
@@ -60,7 +60,6 @@ Data structures manipulations
 			(_.map double, [1, 2, 3]).should.deep.equal [[1, 1], [2, 2], [3, 3]]
 
 
-
 	describe 'flat_map', ->
 		xs = [1, 2, 3]
 		f = (x) -> [x, x]
@@ -84,6 +83,17 @@ Data structures manipulations
 
 		it 'should return empty array if empty array or object given as an argument', ->
 			(_.filter positive, []).should.deep.equal []
+
+
+	describe 'find', ->
+		xs = [-2, -1, 0, 4, 5]
+		positive = (x) -> x > 0
+
+		it 'should return first element that satisfies given predicate', ->
+			(_.find positive, xs).should.equal 4
+
+		it 'should return undefined if none of the elements complies', ->
+			expect(_.find positive, [-1, -2, 0]).to.equal undefined
 
 
 	describe 'select', ->
@@ -222,6 +232,21 @@ Monoids
 			b = {b: 2, c: undefined}
 			(_.combine a, b).should.deep.equal {a: [1], b: [undefined, 2], c: [undefined]}
 
+
+	describe 'max', ->
+		bigger = 5; smaller = 3
+
+		it 'should return biggest of two numbers', ->
+			(_.max bigger, smaller).should.equal bigger
+
+
+	describe 'min', ->
+		bigger = 5; smaller = 3
+
+		it 'should return biggest of two numbers', ->
+			(_.min bigger, smaller).should.equal smaller
+
+
 Reducers
 --------
 
@@ -330,6 +355,33 @@ Reducers
 		it 'should sequentially combine objects in an array, filling non-existent values', ->
 			(_.sequence xs).should.deep.equal result
 
+
+	describe 'biggest', ->
+		biggest = 45
+		smallest = 3
+		xs = [smallest, biggest, 23]
+
+		it 'should return the biggest number in an array', ->
+			(_.biggest xs).should.equal biggest
+
+		# XXX: should I fix that behaviour?
+		it 'should return minus Infinity if given array is empty', ->
+			(_.biggest []).should.equal (-Infinity)
+
+
+	describe 'smallest', ->
+		biggest = 45
+		smallest = 3
+		xs = [smallest, biggest, 23]
+
+		it 'should return the smallest number in an array', ->
+			(_.smallest xs).should.equal smallest
+
+		# XXX: should I fix that behaviour?
+		it 'should return Infinity if given array is empty', ->
+			(_.smallest []).should.equal Infinity
+
+
 Function Composition
 --------------------
 
@@ -373,8 +425,8 @@ Other Stuff
 			(_.average []).should.be.equal 0
 
 
-Head
-----
+Array accessors
+---------------
 
 	describe 'head', ->
 		first = 1
@@ -386,7 +438,38 @@ Head
 		it 'should return undefined if array is empty', ->
 			expect(_.head([])).equal undefined
 
-	
+
+	describe 'last', ->
+		last = 5
+		xs = [1, 2, 3, 4, last]
+
+		it 'should return last element of the array', ->
+			_.last(xs).should.equal last
+
+		it 'should return undefined if array is empty', ->
+			expect(_.last([])).equal undefined
+
+
+	describe 'tail', ->
+		xs = [1, 2, 3]
+
+		it 'should return all element of the array but first', ->
+			_.tail(xs).should.deep.equal [2, 3]
+
+		it 'should return empty array if array is empty', ->
+			(_.tail([])).should.deep.equal []
+
+
+	describe 'init', ->
+		xs = [1, 2, 3]
+
+		it 'should return all element of the array but last', ->
+			_.init(xs).should.deep.equal [1, 2]
+
+		it 'should return empty array if array is empty', ->
+			(_.init([])).should.deep.equal []
+
+
 	describe 'relate', ->
 		a = {a: 1, b: 2, c: 3}
 		b = {b: 4, c: 5, d: 6}
@@ -397,6 +480,4 @@ Head
 
 		it 'should be autocurried only for first argument', ->
 			((_.relate f)(a, b)).should.be.deep.equal {a: 0, b: 8, c: 15, d: 0}
-
-
 
