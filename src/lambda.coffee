@@ -32,16 +32,35 @@ monoid = (id) -> (op) ->
 	f = def op
 	f.id = id; f
 
+dict = (xs) ->
+	xd = {}; xd[k] = v for [k, v] in xs; xd
+
+keys = (xd) ->
+	k for k, v of xd
+
+values = (xd) ->
+	v for k, v of xd
+
+universal = (f) -> (h) -> (o) ->
+	f.keys   = dict f h (keys o)
+	f.values = dict f h (values o)
+	return f h, o
+
 
 _ = {}
 
 _.ncurry = ncurry
 _.curry = curry
 
-_.map = def (f, xsd) ->
-	if is_hash xsd
-		_.dict ([k, (f v, k)] for k, v of xsd)
-	else f x for x in xsd
+_.map = def (f, xs) ->
+	f x for x in xs
+
+_.map.values = def (f, kv) ->
+	_.dict ([k, (f v, k)] for k, v of kv)
+
+_.map.keys = def (f, kv) ->
+	_.dict ([(f k, v), v] for k, v of kv)
+
 
 _.flat_map = def (f, xs) ->
 	_.flatten (_.map f, xs)
@@ -81,11 +100,9 @@ _.length = (xsd) ->
 		_.length (_.keys xsd)
 	else xsd.length
 
-_.keys = (xd) ->
-	k for k, v of xd
+_.keys = keys
 
-_.values = (xd) ->
-	v for k, v of xd
+_.values = values
 
 _.items = (xd) ->
 	[k, v] for k, v of xd
@@ -246,7 +263,7 @@ _.apply = def (f, xs) ->
 
 _.relate = (f, a, b) ->
 	action = (f_, a_, b_) ->
-		_.map (_.apply f_), _.sequence [a_, b_]
+		_.map.values (_.apply f_), _.sequence [a_, b_]
 	if arguments.length >= 3
 		action f, a, b
 	else (a, b) -> action f, a, b
@@ -275,8 +292,7 @@ _.fill = def (xs, xd) ->
 	fillers = _.dict (_.map f, xs)
 	_.extend fillers, xd
 
-_.dict = (xs) ->
-	xd = {}; xd[k] = v for [k, v] in xs; xd
+_.dict = dict
 
 _.def = def
 

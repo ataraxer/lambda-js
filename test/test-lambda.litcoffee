@@ -41,11 +41,11 @@ Data structures manipulations
 
 		it 'should map function over every value of object', ->
 			kv = {a: 1, b: 2, c: 3}
-			(_.map f, kv).should.deep.equal {a: 2, b: 3, c: 4}
+			(_.map.values f, kv).should.deep.equal {a: 2, b: 3, c: 4}
 
 		it 'should correctly handle empty arrays and objects', ->
 			(_.map f, []).should.deep.equal []
-			(_.map f, {}).should.deep.equal {}
+			(_.map.values f, {}).should.deep.equal {}
 
 		it 'should not fail if functions returns unexpected values', ->
 			(_.map f, ['a']).should.deep.equal ['a1']
