@@ -25,10 +25,6 @@ def = (action) ->
 		else (curry action) f
 
 monoid = (id) -> (op) ->
-	#f = def (a, b) ->
-		#op a, b
-		#if not a? then a = id
-		#if not b? then b = id
 	f = def op
 	f.id = id; f
 
@@ -41,16 +37,22 @@ keys = (xd) ->
 values = (xd) ->
 	v for k, v of xd
 
-universal = (f) -> (h) -> (o) ->
-	f.keys   = dict f h (keys o)
-	f.values = dict f h (values o)
-	return f h, o
+universal = (f) ->
+	f.keys   = def (h, o) -> f h, (keys o)
+	f.values = def (h, o) -> f h, (values o)
+	return f
 
 
 _ = {}
 
+
+_.keys = keys
+_.values = values
+
+
 _.ncurry = ncurry
 _.curry = curry
+
 
 _.map = def (f, xs) ->
 	f x for x in xs
@@ -64,6 +66,12 @@ _.map.keys = def (f, kv) ->
 
 _.flat_map = def (f, xs) ->
 	_.flatten (_.map f, xs)
+
+_.flat_map.values = def (f, kv) ->
+	_.flat_map (_.map.values f, kv)
+
+_.flat_map.keys = def (f, xs) ->
+	_.flatten (_.map.keys f, kv)
 
 
 _.filter = def (f, xs) ->
@@ -81,7 +89,15 @@ _.filter.keys = def (f, kv) ->
 
 _.find = def (f, xs) ->
 	for x in xs
-		if f(x) then return x
+		if f x then return x
+
+_.find.values = def (f, kv) ->
+	for k, v of kv
+		if f v then return dict [k, v]
+
+_.find.keys = def (f, kv) ->
+	for k, v of kv
+		if f k then return dict [k, v]
 
 
 _.head = (xs) -> xs[0]
@@ -114,9 +130,6 @@ _.length = (xsd) ->
 		_.length (_.keys xsd)
 	else xsd.length
 
-
-_.keys = keys
-_.values = values
 
 _.items = (xd) ->
 	[k, v] for k, v of xd
@@ -201,11 +214,11 @@ _.or = (monoid false) (a, b) ->
 
 
 _.max = (monoid -Infinity) (a, b) ->
-	Math.max(a, b)
+	Math.max a, b
 
 
 _.min = (monoid Infinity) (a, b) ->
-	Math.min(a, b)
+	Math.min a, b
 
 
 _.extend = (monoid {}) (a, b) ->
@@ -247,7 +260,7 @@ _.product = (xsd) ->
 
 
 _.flatten = (xs) ->
-	if (is_hash _.head(xs)) and (_.all is_hash, _.filter(_.equals(undefined), xs))
+	if (is_hash _.head xs) and (_.all is_hash, _.filter(_.equals(undefined), xs))
 		_.reduce _.extend, xs
 	else
 		_.reduce _.concat, xs
