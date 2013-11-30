@@ -87,6 +87,16 @@ _.filter.keys = def (f, kv) ->
 	_.dict (_.filter predicate, (_.items kv))
 
 
+_.omit = def (f, xs) ->
+	_.filter (_.not f), xs
+
+_.omit.values = def (f, kv) ->
+	_.filter.values (_.not f), kv
+
+_.omit.keys = def (f, kv) ->
+	_.filter.keys (_.not f), kv
+
+
 _.find = def (f, xs) ->
 	for x in xs
 		if f x then return x
@@ -137,15 +147,6 @@ _.items = (xd) ->
 
 _.dot = def (k, xd) ->
 	xd[k]
-
-
-_.select = def (f, xd) ->
-	predicate = ([k, v]) -> f k, v
-	_.dict (_.filter predicate, (_.items xd))
-
-
-_.omit = def (f, xd) ->
-	_.select (_.not f), xd
 
 
 _.contains = def (ks, xs) ->

@@ -84,6 +84,15 @@ Data structures manipulations
 		it 'should return empty array if empty array or object given as an argument', ->
 			(_.filter positive, []).should.deep.equal []
 
+		kv = {a: -1, b: 0, c: 1} 
+		f = (k) -> k in ['a', 'b']
+
+		it 'should select all key-value pairs from array which key passes given criteria', ->
+			(_.filter.keys f, kv).should.deep.equal {a: -1, b: 0}
+
+		it 'should remove all key-value pairs from array which key passes given criteria', ->
+			(_.omit.keys f, kv).should.deep.equal {c: 1}
+
 
 	describe 'find', ->
 		xs = [-2, -1, 0, 4, 5]
@@ -94,22 +103,6 @@ Data structures manipulations
 
 		it 'should return undefined if none of the elements complies', ->
 			expect(_.find positive, [-1, -2, 0]).to.equal undefined
-
-
-	describe 'select', ->
-		kv = {a: -1, b: 0, c: 1} 
-		f = (k) -> k in ['a', 'b']
-
-		it 'should select all key-value pairs from array which key passes given criteria', ->
-			(_.select f, kv).should.deep.equal {a: -1, b: 0}
-
-
-	describe 'omit', ->
-		kv = {a: -1, b: 0, c: 1} 
-		f = (k) -> k in ['a', 'b']
-
-		it 'should remove all key-value pairs from array which key passes given criteria', ->
-			(_.omit f, kv).should.deep.equal {c: 1}
 
 
 	describe 'contains', -> 
