@@ -184,7 +184,7 @@ _.clone = (obj) ->
 		obj
 	else
 		copy = obj.constructor()
-		for k, v of obj when v?
+		for k, v of obj when v? and obj.hasOwnProperty k
 			copy[k] = _.clone v
 		copy
 
@@ -231,6 +231,7 @@ _.combine = (monoid {}) (a, b) ->
 	values = (k) ->
 		ak = _.keys a
 		bk = _.keys b
+		# For f*ucks sake FIXME, I'm completely broken
 		if k in ak and k in bk
 			[k, Array.prototype.concat a[k], b[k]]
 		else if k in ak
