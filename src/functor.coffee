@@ -4,13 +4,19 @@ print = console.log.bind console, ">>>:"
 error = console.log.bind console, "ERROR:"
 warn  = console.log.bind console, "WARNING:"
 
-_ = require './lambda'
+_ = {def: def} = require './lambda'
+
+prototype = (o) ->
+	o.prototype
 
 functor = (o, f) ->
-	o.constructor.prototype.fmap = f
+	proto = (prototype o)
+	proto.__lambda__ =
+		(_.extend proto.__lambda__ or {})
+			fmap: f
 
-fmap = (f) -> (o) ->
-	o.fmap.call o, f
+fmap = def (f, o) ->
+	o.__lambda__.fmap f, o
 
 
 module.exports = exports =

@@ -20,8 +20,7 @@ Tests
 	describe 'Functor', ->
 		xs = [1, 2, 3]
 		# define built in map as fmap function for array
-		functor [], [].map
-
+		functor Array, _.map
 
 		it 'should be an abstract container that can be mapped over', ->
 			((fmap (_.add 2)) xs).should.be.deep.equal [3, 4, 5]
