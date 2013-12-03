@@ -335,6 +335,16 @@ _.apply = def (f, xs) ->
 	f.apply undefined, xs
 
 
+_.zip = (f, a, b) ->
+	action = (f_, a_, b_) ->
+		_.flatten (for ai, i in a_
+			for bi, j in b_ when i is j
+				f ai, bi)
+	if arguments.length >= 3
+		action f, a, b
+	else (a, b) -> action f, a, b
+
+
 _.relate = (f, a, b) ->
 	action = (f_, a_, b_) ->
 		_.map.values (_.apply f_), _.sequence [a_, b_]
