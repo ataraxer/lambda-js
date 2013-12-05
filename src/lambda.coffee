@@ -388,8 +388,20 @@ _.def = def
 
 # ==== PARSERS ====
 _.id     = (x) -> x
-_.int    = (x) -> parseInt x, 10
-_.float  = (x) -> parseFloat x, 10
+
+
+_.int    = (x) -> switch x
+	when false then 0
+	when true  then 1
+	else parseInt x, 10
+
+
+_.float  = (x) -> switch x
+	when false then 0.0
+	when true  then 1.0
+	else parseFloat x, 10
+	
+
 _.number = (x) -> _.float x
 # ==== END:PARSERS ====
 
@@ -400,6 +412,16 @@ _.empty = (xsd) ->
 _.print = (x) ->
 	console.log x
 	return x
+
+
+_.message = (msg) -> (x) ->
+	console.log msg, x
+	return x
+
+
+_.log = (f) -> (x) ->
+	console.log result = f x
+	return result
 
 
 module.exports = exports = _
