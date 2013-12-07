@@ -19,6 +19,11 @@ fmap = def (f, o) ->
 	o.__lambda__.fmap f, o
 
 
+# ====Instances====
+functor Array, _.map
+
+
+
 module.exports = exports =
 	fmap: fmap
 	functor: functor

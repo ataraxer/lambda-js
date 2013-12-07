@@ -2,26 +2,24 @@
 
 {functor, fmap} = require './functor'
 {applicative, fapply} = require './applicative'
-{monad} = require './monad'
 
+{monad, bind} = require './monad'
 
 class Maybe
 	type: -> 'Maybe'
 
-class Just extends Maybe
+class MaybeJust extends Maybe
 	constructor: (@value) ->
 	cons: -> 'Just'
-	show: ->
-		console.log 'Just ' + @value
+	show: -> 'Just ' + @value
 
-class Nothing extends Maybe
+class MaybeNothing extends Maybe
 	cons: -> 'Nothing'
-	show: ->
-		console.log 'Nothing'
+	show: -> 'Nothing'
 
 
-just    = (v) -> new Just v
-nothing = new Nothing()
+Just    = (v) -> new MaybeJust v
+Nothing = new MaybeNothing()
 
 print = (xs...) ->
 	for x in xs
@@ -32,21 +30,24 @@ print = (xs...) ->
 
 
 functor Maybe, (f, o) -> switch do o.cons
-	when 'Just'    then just (f o.value)
-	when 'Nothing' then nothing
-
-
-add = (a) -> (b) -> a + b
+	when 'Just'    then Just (f o.value)
+	when 'Nothing' then Nothing
 
 
 applicative Maybe,
-	fapply: (f, o) ->
-		if (do f.cons) is 'Nothing'
-			nothing
+	fapply: (f, o) -> switch do f.cons
+		when 'Nothing' then Nothing
 		else (fmap f.value) o
-	pure: just
+	pure: Just
+
+
+monad Maybe,
+	bind: (f, o) -> switch do o.cons
+		when 'Just'    then f o.value
+		when 'Nothing' then Nothing
+	mreturn: Just
 
 
 module.exports = exports =
-	just: just
-	nothing: nothing
+	Just: Just
+	Nothing: Nothing

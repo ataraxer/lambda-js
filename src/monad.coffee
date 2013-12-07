@@ -9,11 +9,9 @@ _ = {def: def} = require './lambda'
 prototype = (o) ->
 	o.prototype
 
-call = (f, args...) ->
-	if f.constructor.name is 'Function'
-		f args...
-	else
-		f
+call = (f, args...) -> switch f.constructor.name
+		when 'Function' then f args...
+		else f
 
 monad = (o, d) ->
 	proto = (prototype o)
