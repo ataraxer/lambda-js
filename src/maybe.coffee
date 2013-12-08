@@ -1,9 +1,8 @@
 #!/usr/bin/env coffee
 
-{functor, fmap} = require './functor'
-{applicative, fapply} = require './applicative'
-
-{monad, bind} = require './monad'
+{functor}     = require './functor'
+{applicative} = require './applicative'
+{monad}       = require './monad'
 
 class Maybe
 	type: -> 'Maybe'
@@ -21,17 +20,10 @@ class MaybeNothing extends Maybe
 Just    = (v) -> new MaybeJust v
 Nothing = new MaybeNothing()
 
-print = (xs...) ->
-	for x in xs
-		if x.show?
-			console.log x.show()
-		else
-			console.log x
-
-
-functor Maybe, (f, o) -> switch do o.cons
-	when 'Just'    then Just (f o.value)
-	when 'Nothing' then Nothing
+functor Maybe,
+	fmap: (f, o) -> switch do o.cons
+		when 'Just'    then Just (f o.value)
+		when 'Nothing' then Nothing
 
 
 applicative Maybe,

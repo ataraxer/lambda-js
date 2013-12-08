@@ -9,19 +9,18 @@ _ = {def: def} = require './lambda'
 prototype = (o) ->
 	o.prototype
 
-functor = (o, f) ->
+functor = (o, d) ->
 	proto = (prototype o)
 	proto.__lambda__ =
-		(_.extend proto.__lambda__ or {})
-			fmap: f
+		(_.extend proto.__lambda__ or {}) d
 
 fmap = def (f, o) ->
 	o.__lambda__.fmap f, o
 
 
 # ====Instances====
-functor Array, _.map
-
+functor Array,
+	fmap: _.map
 
 
 module.exports = exports =
