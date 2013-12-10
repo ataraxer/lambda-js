@@ -227,19 +227,7 @@ _.extend = (monoid {}) (a, b) ->
 
 
 _.combine = (monoid {}) (a, b) ->
-	keys = _.uniq (_.flat_map _.keys, [a, b])
-	values = (k) ->
-		ak = _.keys a
-		bk = _.keys b
-		# For f*ucks sake FIXME, I'm completely broken
-		if k in ak and k in bk
-			[k, Array.prototype.concat a[k], b[k]]
-		else if k in ak
-			[k, Array.prototype.concat [], a[k]]
-		else if k in bk
-			[k, Array.prototype.concat [], b[k]]
-		else [k, []]
-	_.dict (_.map values, keys)
+	_.gather [a, b]
 # ==== END:MONOIDS ====
 
 
@@ -285,15 +273,17 @@ _.smallest = (xs) ->
 
 
 _.gather = (xs) ->
-	_.reduce _.combine, xs
+	keys = _.uniq (_.flat_map _.keys) xs
+	get = (k) ->
+		values = (_.map _.dot k) (_.filter _.contains.keys k) xs
+		[k, values]
+	_.dict (_.map get) keys
 
 
 _.sequence = (xs) ->
-	keys = _.uniq (_.flat_map _.keys, xs)
+	keys = _.uniq (_.flat_map _.keys) xs
 	fill = _.fill keys
-	reducer = (agg, x) ->
-		_.combine (fill agg), (fill x)
-	xs.reduce reducer
+	_.gather (_.map fill) xs
 # ==== END:REDUCERS ====
 
 
