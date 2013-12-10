@@ -1,6 +1,6 @@
 This file provides tests for `Functor` module.
 
-Importing `assert` from `mocha` node module.
+Mocha and Chai initialization
 
 	assert = require 'assert'
 
@@ -9,19 +9,16 @@ Importing `assert` from `mocha` node module.
 
 	expect = chai.expect
 
-Importing functor and fmap from `Functor` module
+Module initialization
 
 	_ = require '../src/lambda'
-	{fmap: fmap, functor: functor} = require '../src/functor'
+	{fmap} = require '../src/functor'
 
 Tests
 -------
 
 	describe 'Functor', ->
 		xs = [1, 2, 3]
-		# define built in map as fmap function for array
-		functor Array, _.map
 
 		it 'should be an abstract container that can be mapped over', ->
 			((fmap (_.add 2)) xs).should.be.deep.equal [3, 4, 5]
-
