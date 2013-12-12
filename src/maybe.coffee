@@ -1,16 +1,20 @@
 #!/usr/bin/env coffee
 
-{functor}     = require './functor'
-{applicative} = require './applicative'
-{monad}       = require './monad'
+{functor, fmap} = require './functor'
+{applicative}   = require './applicative'
+{monad}         = require './monad'
+
 
 class Maybe
 	type: -> 'Maybe'
+	eq: (m) -> do @cons == do m.cons and @value == m.value
+
 
 class MaybeJust extends Maybe
 	constructor: (@value) ->
 	cons: -> 'Just'
 	show: -> 'Just ' + @value
+
 
 class MaybeNothing extends Maybe
 	cons: -> 'Nothing'
@@ -19,6 +23,7 @@ class MaybeNothing extends Maybe
 
 Just    = (v) -> new MaybeJust v
 Nothing = new MaybeNothing()
+
 
 functor Maybe,
 	fmap: (f, o) -> switch do o.cons
