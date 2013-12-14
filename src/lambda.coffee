@@ -390,7 +390,7 @@ _.float  = (x) -> switch x
 	when false then 0.0
 	when true  then 1.0
 	else parseFloat x, 10
-	
+
 
 _.number = (x) -> _.float x
 # ==== END:PARSERS ====

@@ -1,8 +1,8 @@
 #!/usr/bin/env coffee
 
-{functor, fmap} = require './functor'
-{applicative}   = require './applicative'
-{monad}         = require './monad'
+{functor, fmap} = require '../classes/functor'
+{applicative}   = require '../classes/applicative'
+{monad}         = require '../classes/monad'
 
 
 class Maybe

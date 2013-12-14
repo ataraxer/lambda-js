@@ -4,7 +4,7 @@ print = console.log.bind console, ">>>:"
 error = console.log.bind console, "ERROR:"
 warn  = console.log.bind console, "WARNING:"
 
-_ = {def: def} = require './lambda'
+_ = {def: def} = require '../lambda'
 
 prototype = (o) ->
 	o.prototype

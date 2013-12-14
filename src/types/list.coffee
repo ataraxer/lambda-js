@@ -1,12 +1,12 @@
 #!/usr/bin/env coffee
 
-_ = {def} = require './lambda'
-{print, show} = require './print'
+_ = {def} = require '../lambda'
+{print, show} = require '../print'
 {Just, Nothing} = require './maybe'
 
-{functor}     = require './functor'
-{applicative} = require './applicative'
-{monad}       = require './monad'
+{functor}     = require '../classes/functor'
+{applicative} = require '../classes/applicative'
+{monad}       = require '../classes/monad'
 
 
 type = (x) ->
