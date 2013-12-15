@@ -12,7 +12,7 @@ Mocha and Chai initialization
 Module initialization
 
 	_ = require '../src/lambda'
-	{fapply} = require '../src/applicative'
+	{fapply} = require '../src/classes/applicative'
 
 Tests
 -------

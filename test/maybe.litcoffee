@@ -12,10 +12,10 @@ Mocha and Chai initialization
 Modules initialization
 
 	_ = require '../src/lambda'
-	{Just, Nothing} = require '../src/maybe'
-	{fmap}   = require '../src/functor'
-	{fapply} = require '../src/applicative'
-	{bind}   = require '../src/monad'
+	{Just, Nothing} = require '../src/types/maybe'
+	{fmap}   = require '../src/classes/functor'
+	{fapply} = require '../src/classes/applicative'
+	{bind}   = require '../src/classes/monad'
 
 Tests
 -------

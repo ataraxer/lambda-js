@@ -12,7 +12,7 @@ Mocha and Chai initialization
 Module initialization
 
 	_ = require '../src/lambda'
-	{fmap} = require '../src/functor'
+	{fmap} = require '../src/classes/functor'
 
 Tests
 -------

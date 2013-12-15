@@ -12,7 +12,7 @@ Mocha and Chai initialization
 Modules initialization
 
 	_ = require '../src/lambda'
-	{bind} = require '../src/monad'
+	{bind} = require '../src/classes/monad'
 
 Tests
 -------
