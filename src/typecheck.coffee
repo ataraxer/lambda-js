@@ -25,8 +25,9 @@ sub = (t) -> (f) -> (x) ->
 
 
 Num = Float = (x) ->
+	x and x.constructor? and \
 	x.constructor.name is 'Number' \
-		and (not isNaN x)
+		and x is x
 
 
 Int = (sub Num) (x) ->
