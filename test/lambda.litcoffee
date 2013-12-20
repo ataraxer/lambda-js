@@ -39,25 +39,50 @@ Data structures manipulations
 			xs = [1, 2, 3, 4, 5]
 			(_.map f, xs).should.deep.equal [2, 3, 4, 5, 6]
 
-		it 'should map function over every value of object', ->
-			kv = {a: 1, b: 2, c: 3}
-			(_.map.values f, kv).should.deep.equal {a: 2, b: 3, c: 4}
-
-		it 'should correctly handle empty arrays and objects', ->
+		it 'should correctly handle empty arrays', ->
 			(_.map f, []).should.deep.equal []
-			(_.map.values f, {}).should.deep.equal {}
 
 		it 'should not fail if functions returns unexpected values', ->
 			(_.map f, ['a']).should.deep.equal ['a1']
 			(all_nan _.map f, [undefined]).should.be.true
 			(all_nan _.map ((x) -> x / 1), ['a']).should.be.true
 
-		it 'should return empty array if the second argument is not an array or an object', ->
+		it 'should return empty array if the second argument is not an array', ->
 			(_.map f, 1).should.deep.equal []
-		
+
 		it 'should leave resulting array unflattened', ->
 			double = (x) -> [x, x]
 			(_.map double, [1, 2, 3]).should.deep.equal [[1, 1], [2, 2], [3, 3]]
+
+
+	describe 'map.values', ->
+		f = (x) -> x + 1
+		all_nan = _.all isNaN
+
+		it 'should map function over every value of object', ->
+			kv = {a: 1, b: 2, c: 3}
+			(_.map.values f, kv).should.deep.equal {a: 2, b: 3, c: 4}
+
+		it 'should correctly handle empty objects', ->
+			(_.map.values f, {}).should.deep.equal {}
+
+		it 'should return empty object if the second argument is not an object', ->
+			(_.map.values f, 1).should.deep.equal {}
+
+
+	describe 'map.keys', ->
+		f = (x) -> x + 1
+		all_nan = _.all isNaN
+
+		it 'should map function over every key of object', ->
+			kv = {a: 1, b: 2, c: 3}
+			(_.map.keys f, kv).should.deep.equal {a1: 1, b1: 2, c1: 3}
+
+		it 'should correctly handle empty objects', ->
+			(_.map.keys f, {}).should.deep.equal {}
+
+		it 'should return empty object if the second argument is not an object', ->
+			(_.map.keys f, 1).should.deep.equal {}
 
 
 	describe 'flat_map', ->
@@ -75,22 +100,57 @@ Data structures manipulations
 		xs = [-2, -1, 0, 1, 2]
 		positive = (x) -> x > 0
 		even = (x) -> x % 2 == 0
-		
-		it 'should clear data structure from elements that do not result in true ' +
-			'when passed to test function', ->
+
+		it 'should clear an array from elements that do not match the predicate', ->
 			(_.filter positive, xs).should.deep.equal [1, 2]
 			(_.filter even, xs).should.deep.equal [-2, 0, 2]
 
 		it 'should return empty array if empty array or object given as an argument', ->
 			(_.filter positive, []).should.deep.equal []
 
-		kv = {a: -1, b: 0, c: 1} 
+
+	describe 'filter.values', ->
+		kv = {a: -1, b: 0, c: 1}
+		positive = (x) -> x > 0
+
+		it 'should select all key-value pairs from array which value mathes given predicate', ->
+			(_.filter.values positive, kv).should.deep.equal {c: 1}
+
+
+	describe 'filter.keys', ->
+		kv = {a: -1, b: 0, c: 1}
 		f = (k) -> k in ['a', 'b']
 
-		it 'should select all key-value pairs from array which key passes given criteria', ->
+		it 'should select all key-value pairs from array which key mathes given predicate', ->
 			(_.filter.keys f, kv).should.deep.equal {a: -1, b: 0}
 
-		it 'should remove all key-value pairs from array which key passes given criteria', ->
+
+	describe 'omit', ->
+		xs = [-2, -1, 0, 1, 2]
+		positive = (x) -> x > 0
+		even = (x) -> x % 2 == 0
+
+		it 'should clear an array from elements that match the predicate', ->
+			(_.omit positive, xs).should.deep.equal [-2, -1, 0]
+			(_.omit even, xs).should.deep.equal [-1, 1]
+
+		it 'should return empty array if empty array or object given as an argument', ->
+			(_.omit positive, []).should.deep.equal []
+
+
+	describe 'omit.values', ->
+		kv = {a: -1, b: 0, c: 1}
+		positive = (x) -> x > 0
+
+		it 'should omit all key-value pairs from array which value mathes given predicate', ->
+			(_.omit.values positive, kv).should.deep.equal {a: -1, b: 0}
+
+
+	describe 'omit.keys', ->
+		kv = {a: -1, b: 0, c: 1}
+		f = (k) -> k in ['a', 'b']
+
+		it 'should omit all key-value pairs from array which key mathes given predicate', ->
 			(_.omit.keys f, kv).should.deep.equal {c: 1}
 
 
@@ -107,13 +167,32 @@ Data structures manipulations
 
 	describe 'contains', -> 
 		xs = ['foo', 'bar', 'apple', 'orange']
-		kv = { foo: 1, bar: 2, apple: 3, orange: 4 }
 
 		it 'should check if item or list of items is present in an array', ->
 			(_.contains 'bar', xs).should.equal true
 			(_.contains 'baz', xs).should.equal false
 			(_.contains ['bar', 'apple'], xs).should.equal true
 			(_.contains ['bar', 'baz'], xs).should.equal false
+
+
+	describe 'contains.keys', ->
+		kv = { foo: 1, bar: 2, apple: 3, orange: 4 }
+
+		it 'should check if item or list of items is present in object\'s keys', ->
+			(_.contains.keys 'bar', kv).should.equal true
+			(_.contains.keys 'baz', kv).should.equal false
+			(_.contains.keys ['bar', 'apple'], kv).should.equal true
+			(_.contains.keys ['bar', 'baz'], kv).should.equal false
+
+
+	describe 'contains.values', ->
+		kv = { foo: 1, bar: 2, apple: 3, orange: 4 }
+
+		it 'should check if item or list of items is present in obejct\'s values', ->
+			(_.contains.values 3, kv).should.equal true
+			(_.contains.values 0, kv).should.equal false
+			(_.contains.values [1, 4], kv).should.equal true
+			(_.contains.values [1, 5], kv).should.equal false
 
 
 	describe 'in', -> 
@@ -405,6 +484,7 @@ Other Stuff
 		
 		it 'should group items based on given function result', ->
 			(_.group_by even, xs).should.be.deep.equal {true: [2, 4, 6], false: [1, 3, 5]}
+			(_.group_by _.id, xs).should.be.deep.equal {1: [1], 2: [2], 3: [3], 4: [4], 5: [5], 6: [6]}
 
 
 	describe 'average', ->
