@@ -168,31 +168,25 @@ Data structures manipulations
 	describe 'contains', -> 
 		xs = ['foo', 'bar', 'apple', 'orange']
 
-		it 'should check if item or list of items is present in an array', ->
+		it 'should check if item is present in an array', ->
 			(_.contains 'bar', xs).should.equal true
 			(_.contains 'baz', xs).should.equal false
-			(_.contains ['bar', 'apple'], xs).should.equal true
-			(_.contains ['bar', 'baz'], xs).should.equal false
 
 
 	describe 'contains.keys', ->
 		kv = { foo: 1, bar: 2, apple: 3, orange: 4 }
 
-		it 'should check if item or list of items is present in object\'s keys', ->
+		it 'should check if item is present in object\'s keys', ->
 			(_.contains.keys 'bar', kv).should.equal true
 			(_.contains.keys 'baz', kv).should.equal false
-			(_.contains.keys ['bar', 'apple'], kv).should.equal true
-			(_.contains.keys ['bar', 'baz'], kv).should.equal false
 
 
 	describe 'contains.values', ->
 		kv = { foo: 1, bar: 2, apple: 3, orange: 4 }
 
-		it 'should check if item or list of items is present in obejct\'s values', ->
+		it 'should check if item is present in obejct\'s values', ->
 			(_.contains.values 3, kv).should.equal true
 			(_.contains.values 0, kv).should.equal false
-			(_.contains.values [1, 4], kv).should.equal true
-			(_.contains.values [1, 5], kv).should.equal false
 
 
 	describe 'in', -> 

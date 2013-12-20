@@ -101,14 +101,6 @@ _.find = def (f, xs) ->
 	for x in xs
 		if f x then return x
 
-_.find.values = def (f, kv) ->
-	for k, v of kv
-		if f v then return dict [k, v]
-
-_.find.keys = def (f, kv) ->
-	for k, v of kv
-		if f k then return dict [k, v]
-
 
 _.head = (xs) -> xs[0]
 _.tail = (xs) -> xs[1..-1]
@@ -149,12 +141,8 @@ _.dot = def (k, xd) ->
 	xd[k]
 
 
-_.contains = def (ks, xs) ->
-	if typeof ks is 'string'
-		ks in xs
-	else
-		test = (k) -> k in xs
-		_.all test, ks
+_.contains = def (k, xs) ->
+	k in xs
 
 _.contains.values = def (ks, kv) ->
 	_.contains ks, (_.values kv)
@@ -300,16 +288,19 @@ _.is_number = (n) ->
 
 
 _.sort = (xs) ->
-	numbers = (_.map _.number) ((_.filter _.is_number) xs)
+	numbers = (_.map _.number) (_.filter _.is_number) xs
 	strings = (_.filter (_.not _.is_number)) xs
 
-	sorted_numbers = numbers.sort (a, b) ->
+	sorted_numbers = numbers.sort a, b ->
 		a - b
-	sorted_strings = strings.sort (a, b) ->
-		a.localeCompare(b)
+	sorted_strings = strings.sort a, b ->
+		a.localeCompare b 
+
+	_.concat sorted_numbers, sorted_strings
 
 
-	(_.concat sorted_numbers, sorted_strings)
+_.sort.by = (f) -> (xs) ->
+	xs.sort f
 
 
 _.pipe = (fs...) -> (a) ->
