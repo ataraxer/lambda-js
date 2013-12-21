@@ -353,8 +353,22 @@ _.replace = (a, b) -> (x) ->
 
 
 _.uniq = (xs) ->
-	f = (x) -> [x, 1]
-	_.keys _.dict (_.map f, xs)
+	result = []
+	for x in xs when x not in result
+		result.push x
+	result
+
+
+_.union = def (a, b) ->
+	_.uniq _.concat a, b
+
+
+_.intersection = def (a, b) ->
+	(_.filter (x) -> x in a and x in b) _.union a, b
+
+
+_.difference = def (a, b) ->
+	(_.filter (x) -> not (x in a and x in b)) _.union a, b
 
 
 _.fill = def (xs, xd) ->
