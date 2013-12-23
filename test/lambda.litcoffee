@@ -125,6 +125,29 @@ Data structures manipulations
 			(_.filter.keys f, kv).should.deep.equal {a: -1, b: 0}
 
 
+	describe 'uniq', ->
+		xs = [1, 2, 3, 'foo', 3, 'foo', 'bar']
+
+		it 'should return a set of uniq elements of list', ->
+			(_.uniq xs).should.be.deep.equal [1, 2, 3, 'foo', 'bar']
+
+
+	describe 'intersection', ->
+		a = [1, 2, 3, 'foo']
+		b = [3, 'foo', 'bar']
+
+		it 'should return a set of element present in both given sets', ->
+			(_.intersection a, b).should.be.deep.equal [3, 'foo']
+
+
+	describe 'diffrenect', ->
+		a = [1, 2, 3, 'foo']
+		b = [3, 'foo', 'bar']
+
+		it 'should return a set of elements present in both given sets', ->
+			(_.difference a, b).should.be.deep.equal [1, 2, 'bar']
+
+
 	describe 'omit', ->
 		xs = [-2, -1, 0, 1, 2]
 		positive = (x) -> x > 0
