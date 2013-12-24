@@ -125,6 +125,16 @@ Data structures manipulations
 			(_.filter.keys f, kv).should.deep.equal {a: -1, b: 0}
 
 
+	describe 'zip', ->
+
+		it 'should zip two lists together resulting in list of pairs and apply a function to each pair', ->
+			(_.zip _.add, [1, 2, 3], [3, 2, 1]).should.be.deep.equal [4, 4, 4]
+
+		it 'should descard leftover elements from the longer input list', ->
+			(_.zip _.add, [1, 2], [3, 2, 1]).should.be.deep.equal [4, 4]
+			(_.zip _.add, [1, 2, 3], [3, 2]).should.be.deep.equal [4, 4]
+
+
 	describe 'uniq', ->
 		xs = [1, 2, 3, 'foo', 3, 'foo', 'bar']
 
