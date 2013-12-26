@@ -5,14 +5,11 @@ error = console.log.bind console, "ERROR:"
 warn  = console.log.bind console, "WARNING:"
 
 _ = {def: def} = require '../lambda'
+{lambda_class} = require '../class'
 
-prototype = (o) ->
-	o.prototype
 
-functor = (o, d) ->
-	proto = (prototype o)
-	proto.__lambda__ =
-		(_.extend proto.__lambda__ or {}) d
+functor = lambda_class 'fmap'
+
 
 fmap = def (f, o) ->
 	o.__lambda__.fmap f, o

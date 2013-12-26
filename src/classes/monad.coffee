@@ -5,21 +5,15 @@ error = console.log.bind console, "ERROR:"
 warn  = console.log.bind console, "WARNING:"
 
 _ = {def: def} = require '../lambda'
+{lambda_class, call} = require '../class'
 
-prototype = (o) ->
-	o.prototype
 
-call = (f, args...) -> switch f.constructor.name
-		when 'Function' then f args...
-		else f
+monad = lambda_class 'bind', 'mreturn'
 
-monad = (o, d) ->
-	proto = (prototype o)
-	proto.__lambda__ =
-		(_.extend proto.__lambda__ or {}) d
 
 bind = def (f, o) ->
 	o.__lambda__.bind f, o
+
 
 mreturn = (x) -> (o) -> o.__lambda__.mreturn x
 

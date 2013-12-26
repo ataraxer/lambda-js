@@ -5,21 +5,15 @@ error = console.log.bind console, "ERROR:"
 warn  = console.log.bind console, "WARNING:"
 
 _ = {def: def} = require '../lambda'
+{lambda_class, call} = require '../class'
 
-prototype = (o) ->
-	o.prototype
 
-call = (f, args...) -> switch f.constructor.name
-		when 'Function' then f args...
-		else f
+applicative = lambda_class 'fapply', 'pure'
 
-applicative = (o, d) ->
-	proto = (prototype o)
-	proto.__lambda__ =
-		(_.extend proto.__lambda__ or {}) d
 
 fapply = def (fs, o) ->
 	o.__lambda__.fapply (call fs, o), o
+
 
 pure = (x) -> (o) -> o.__lambda__.pure x
 
@@ -33,6 +27,6 @@ applicative Array,
 
 
 module.exports = exports =
-	fapply: fapply
 	applicative: applicative
+	fapply: fapply
 	pure: pure
