@@ -1,15 +1,17 @@
 {
-	"name": "lambda-js",
-	"version": "0.1.0",
-	"devDependencies": {
-		"grunt": "~0.4.1",
-		"grunt-contrib-jshint": "~0.6.3",
-		"grunt-contrib-coffee": "~0.7.0",
-		"grunt-contrib-uglify": "~0.2.2"
-	},
-	"dependencies": {
-		"moment": "~2.2.1",
-		"mocha": "~1.0.0",
-		"chai": "~1.0.0"
-	}
+  "name": "lambda-js",
+  "version": "0.1.0",
+  "devDependencies": {
+    "mocha": "~1.0.3",
+    "chai": "~1.0.4",
+    "gulp": "~3.3.2",
+    "gulp-coffee": "~1.2.5",
+    "gulp-mocha": "~0.3.0",
+    "gulp-util": "~2.2.10"
+  },
+  "dependencies": {
+    "moment": "~2.2.1",
+    "mocha": "~1.0.0",
+    "chai": "~1.0.0"
+  }
 }
