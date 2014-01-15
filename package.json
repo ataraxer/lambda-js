@@ -7,11 +7,14 @@
     "gulp": "~3.3.2",
     "gulp-coffee": "~1.2.5",
     "gulp-mocha": "~0.3.0",
-    "gulp-util": "~2.2.10"
+    "gulp-util": "~2.2.10",
+    "gulp-coffeelint": "~0.1.1",
+    "gulp-clean": "~0.2.2"
   },
   "dependencies": {
     "moment": "~2.2.1",
     "mocha": "~1.0.0",
-    "chai": "~1.0.0"
+    "chai": "~1.0.0",
+    "coffee-script": "~1.6.3"
   }
 }
