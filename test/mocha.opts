@@ -1,2 +1,2 @@
---compilers litcoffee:coffee-script
+--compilers coffee:coffee-script
 -R spec

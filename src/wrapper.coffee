@@ -9,13 +9,13 @@ warn  = console.log.bind console, "WARNING:"
 
 
 detectNaN = (x) ->
-	x.constructor? and x.constructor.name is 'Number' and x != x
+  x.constructor? and x.constructor.name is 'Number' and x != x
 
 
 wrap = (x) ->
-	isNully = x == undefined or x == null or detectNaN x
-	if isNully then Nothing else Just x
+  isNully = x == undefined or x == null or detectNaN x
+  if isNully then Nothing else Just x
 
 
 module.exports = exports =
-	wrap: wrap
+  wrap: wrap

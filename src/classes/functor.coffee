@@ -12,14 +12,14 @@ functor = lambda_class 'fmap'
 
 
 fmap = def (f, o) ->
-	o.__lambda__.fmap f, o
+  o.__lambda__.fmap f, o
 
 
 # ====Instances====
 functor Array,
-	fmap: _.map
+  fmap: _.map
 
 
 module.exports = exports =
-	fmap: fmap
-	functor: functor
+  fmap: fmap
+  functor: functor

@@ -12,7 +12,7 @@ applicative = lambda_class 'fapply', 'pure'
 
 
 fapply = def (fs, o) ->
-	o.__lambda__.fapply (call fs, o), o
+  o.__lambda__.fapply (call fs, o), o
 
 
 pure = (x) -> (o) -> o.__lambda__.pure x
@@ -20,13 +20,13 @@ pure = (x) -> (o) -> o.__lambda__.pure x
 
 # ====Instances====
 applicative Array,
-	fapply: (fs, o) ->
-		each = (f) -> _.map f, o
-		_.flat_map each, fs
-	pure: (x) -> [x]
+  fapply: (fs, o) ->
+    each = (f) -> _.map f, o
+    _.flat_map each, fs
+  pure: (x) -> [x]
 
 
 module.exports = exports =
-	applicative: applicative
-	fapply: fapply
-	pure: pure
+  applicative: applicative
+  fapply: fapply
+  pure: pure

@@ -12,7 +12,7 @@ monad = lambda_class 'bind', 'mreturn'
 
 
 bind = def (f, o) ->
-	o.__lambda__.bind f, o
+  o.__lambda__.bind f, o
 
 
 mreturn = (x) -> (o) -> o.__lambda__.mreturn x
@@ -20,12 +20,12 @@ mreturn = (x) -> (o) -> o.__lambda__.mreturn x
 
 # ====Instances====
 monad Array,
-	bind: (f, o) ->
-		(_.flat_map f) o
-	mreturn: (x) -> [x]
+  bind: (f, o) ->
+    (_.flat_map f) o
+  mreturn: (x) -> [x]
 
 
 module.exports = exports =
-	monad: monad
-	bind: bind
-	mreturn: mreturn
+  monad: monad
+  bind: bind
+  mreturn: mreturn

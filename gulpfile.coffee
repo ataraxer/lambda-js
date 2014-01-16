@@ -23,7 +23,7 @@ BUILD_DIR   = 'build/'
 BUILD_FILES = [BUILD_DIR + '*.js']
 
 TEST_DIR   = 'test/'
-TEST_FILES = [TEST_DIR + '*.coffee', TEST_DIR + '*.litcoffee']
+TEST_FILES = [TEST_DIR + '*.coffee']
 
 
 # ==== TASKS ====
