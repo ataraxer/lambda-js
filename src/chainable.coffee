@@ -12,13 +12,13 @@ class Chainable
     @map.keys = (f) => chain (_.map.keys f, @data)
     @map.values = (f) => chain (_.map.values f, @data)
 
-    @filter = (f) -> chain (_.filter f, @data)
-    @filter.keys = (f) -> chain (_.filter.keys f, @data)
-    @filter.values = (f) -> chain (_.filter.values f, @data)
+    @filter = (f) => chain (_.filter f, @data)
+    @filter.keys = (f) => chain (_.filter.keys f, @data)
+    @filter.values = (f) => chain (_.filter.values f, @data)
 
-    @omit = (f) -> chain (_.omit f, @data)
-    @omit.keys = (f) -> chain (_.omit.keys f, @data)
-    @omit.values = (f) -> chain (_.omit.values f, @data)
+    @omit = (f) => chain (_.omit f, @data)
+    @omit.keys = (f) => chain (_.omit.keys f, @data)
+    @omit.values = (f) => chain (_.omit.values f, @data)
 
     sort = => chain (_.sort @data)
     sort.by = (f) => chain (_.sort.by @data)
@@ -38,4 +38,6 @@ class Chainable
   dict: -> chain (_.dict @data)
 
 
-module.exports = exports = Chainable
+module.exports = exports =
+  Chainable: Chainable
+  chain: chain
