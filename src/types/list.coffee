@@ -41,13 +41,13 @@ functor _List,
 applicative _List,
   fapply: def (fs, o) ->
     each = (f) -> _.map f, o.value
-    List _.flat_map each, fs.value
+    List _.map.flat each, fs.value
   pure: (x) -> List x
 
 
 monad _List,
   bind: def (f, o) ->
-    List (_.flat_map f) o.value
+    List (_.map.flat f) o.value
   mreturn: (x) -> List x
 
 

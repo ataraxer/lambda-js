@@ -84,15 +84,15 @@ describe 'map.keys', ->
     (_.map.keys f, 1).should.deep.equal {}
 
 
-describe 'flat_map', ->
+describe 'map.flat', ->
   xs = [1, 2, 3]
   f = (x) -> [x, x]
 
   it 'should map function over every element of array and flatten resulting list', ->
-    (_.flat_map f, xs).should.deep.equal [1, 1, 2, 2, 3, 3]
+    (_.map.flat f, xs).should.deep.equal [1, 1, 2, 2, 3, 3]
 
   it 'should be equivalent of composing `flatten` and `map`', ->
-    (_.flat_map f, xs).should.deep.equal (_.compose _.flatten, _.map f) (xs)
+    (_.map.flat f, xs).should.deep.equal (_.compose _.flatten, _.map f) (xs)
 
 
 describe 'filter', ->

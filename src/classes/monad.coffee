@@ -21,7 +21,7 @@ mreturn = (x) -> (o) -> o.__lambda__.mreturn x
 # ====Instances====
 monad Array,
   bind: (f, o) ->
-    (_.flat_map f) o
+    (_.map.flat f) o
   mreturn: (x) -> [x]
 
 

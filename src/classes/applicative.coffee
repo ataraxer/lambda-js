@@ -22,7 +22,7 @@ pure = (x) -> (o) -> o.__lambda__.pure x
 applicative Array,
   fapply: (fs, o) ->
     each = (f) -> _.map f, o
-    _.flat_map each, fs
+    _.map.flat each, fs
   pure: (x) -> [x]
 
 

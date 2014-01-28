@@ -63,15 +63,8 @@ _.map.values = def (f, kv) ->
 _.map.keys = def (f, kv) ->
   _.dict ([(f k, v), v] for k, v of kv)
 
-
-_.flat_map = def (f, xs) ->
+_.map.flat = def (f, xs) ->
   _.flatten (_.map f, xs)
-
-_.flat_map.values = def (f, kv) ->
-  _.flat_map (_.map.values f, kv)
-
-_.flat_map.keys = def (f, xs) ->
-  _.flatten (_.map.keys f, kv)
 
 
 _.filter = def (f, xs) ->
@@ -261,7 +254,7 @@ _.smallest = (xs) ->
 
 
 _.gather = (xs) ->
-  keys = _.uniq (_.flat_map _.keys) xs
+  keys = _.uniq (_.map.flat _.keys) xs
   get = (k) ->
     values = (_.map _.dot k) (_.filter _.contains.keys k) xs
     [k, values]
@@ -269,7 +262,7 @@ _.gather = (xs) ->
 
 
 _.sequence = (xs) ->
-  keys = _.uniq (_.flat_map _.keys) xs
+  keys = _.uniq (_.map.flat _.keys) xs
   fill = _.fill keys
   _.gather (_.map fill) xs
 # ==== END:REDUCERS ====
