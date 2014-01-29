@@ -37,11 +37,6 @@ keys = (xd) ->
 values = (xd) ->
   v for k, v of xd
 
-universal = (f) ->
-  f.keys   = def (h, o) -> f h, (keys o)
-  f.values = def (h, o) -> f h, (values o)
-  return f
-
 
 _ = {}
 
@@ -56,6 +51,9 @@ _.curry = curry
 
 _.map = def (f, xs) ->
   f x for x in xs
+
+_.map.items = def (f, kv) ->
+  _.dict (f k, v for k, v of kv)
 
 _.map.values = def (f, kv) ->
   _.dict ([k, (f v, k)] for k, v of kv)
@@ -94,6 +92,18 @@ _.find = def (f, xs) ->
   for x in xs
     if f x then return x
 
+_.find.keys = def (f, kv) ->
+  for k, v of kv
+    if f k then return [k, v]
+
+_.find.values = def (f, kv) ->
+  for k, v of kv
+    if f v then return [k, v]
+
+_.find.items = def (f, kv) ->
+  for k, v of kv
+    if f k, v then return [k, v]
+
 
 _.head = (xs) -> xs[0]
 _.tail = (xs) -> xs[1..-1]
@@ -109,11 +119,15 @@ _.drop = def (n, xs) ->
   xs[n..]
 
 
-_.equals = def (a, b) -> a is b
+_.equals = _.eq = def (a, b) -> a is b
 
+_.gt = def (a, b) -> b > a
+_.ge = def (a, b) -> b >= a
+_.lt = def (a, b) -> b < a
+_.le = def (a, b) -> b <= a
 
-_.positive = (x) -> x > 0
-_.negative = (x) -> x < 0
+_.positive = _.gt(0)
+_.negative = _.lt(0)
 
 
 _.push = def (x, xs) ->
@@ -126,22 +140,27 @@ _.length = (xsd) ->
   else xsd.length
 
 
-_.items = (xd) ->
-  [k, v] for k, v of xd
+_.items = (kv) ->
+  [k, v] for k, v of kv
 
 
-_.dot = def (k, xd) ->
-  xd[k]
+_.dot = def (k, kv) -> kv[k]
+
+_.dot.path = (ks...) -> (kv) ->
+  for k in ks
+    if not is_hash (kv = kv[k])
+      return undefined
+  return kv
 
 
 _.contains = def (k, xs) ->
   k in xs
 
-_.contains.values = def (ks, kv) ->
-  _.contains ks, (_.values kv)
+_.contains.values = def (k, kv) ->
+  _.contains k, (_.values kv)
 
-_.contains.keys = def (ks, kv) ->
-  _.contains ks, (_.keys kv)
+_.contains.keys = def (k, kv) ->
+  _.contains k, (_.keys kv)
 
 
 _.in = def (xs, v) ->
