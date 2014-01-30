@@ -56,7 +56,6 @@ describe 'map', ->
 
 describe 'map.values', ->
   f = (x) -> x + 1
-  all_nan = _.all isNaN
 
   it 'should map function over every value of object', ->
     kv = {a: 1, b: 2, c: 3}
@@ -71,7 +70,6 @@ describe 'map.values', ->
 
 describe 'map.keys', ->
   f = (x) -> x + 1
-  all_nan = _.all isNaN
 
   it 'should map function over every key of object', ->
     kv = {a: 1, b: 2, c: 3}
@@ -82,6 +80,20 @@ describe 'map.keys', ->
 
   it 'should return empty object if the second argument is not an object', ->
     (_.map.keys f, 1).should.deep.equal {}
+
+
+describe 'map.items', ->
+  f = (k, v) -> [k.toUpperCase(), v * v]
+
+  it 'should map function over every key-value pair of object', ->
+    kv = {a: 1, b: 2, c: 3}
+    (_.map.items f, kv).should.deep.equal {A: 1, B: 4, C: 9}
+
+  it 'should correctly handle empty objects', ->
+    (_.map.items f, {}).should.deep.equal {}
+
+  it 'should return empty object if the second argument is not an object', ->
+    (_.map.items f, 1).should.deep.equal {}
 
 
 describe 'map.flat', ->
@@ -97,23 +109,21 @@ describe 'map.flat', ->
 
 describe 'filter', ->
   xs = [-2, -1, 0, 1, 2]
-  positive = (x) -> x > 0
   even = (x) -> x % 2 == 0
 
   it 'should clear an array from elements that do not match the predicate', ->
-    (_.filter positive, xs).should.deep.equal [1, 2]
+    (_.filter _.positive, xs).should.deep.equal [1, 2]
     (_.filter even, xs).should.deep.equal [-2, 0, 2]
 
   it 'should return empty array if empty array or object given as an argument', ->
-    (_.filter positive, []).should.deep.equal []
+    (_.filter _.positive, []).should.deep.equal []
 
 
 describe 'filter.values', ->
   kv = {a: -1, b: 0, c: 1}
-  positive = (x) -> x > 0
 
   it 'should select all key-value pairs from array which value mathes given predicate', ->
-    (_.filter.values positive, kv).should.deep.equal {c: 1}
+    (_.filter.values _.positive, kv).should.deep.equal {c: 1}
 
 
 describe 'filter.keys', ->
@@ -159,23 +169,21 @@ describe 'diffrenect', ->
 
 describe 'omit', ->
   xs = [-2, -1, 0, 1, 2]
-  positive = (x) -> x > 0
   even = (x) -> x % 2 == 0
 
   it 'should clear an array from elements that match the predicate', ->
-    (_.omit positive, xs).should.deep.equal [-2, -1, 0]
+    (_.omit _.positive, xs).should.deep.equal [-2, -1, 0]
     (_.omit even, xs).should.deep.equal [-1, 1]
 
   it 'should return empty array if empty array or object given as an argument', ->
-    (_.omit positive, []).should.deep.equal []
+    (_.omit _.positive, []).should.deep.equal []
 
 
 describe 'omit.values', ->
   kv = {a: -1, b: 0, c: 1}
-  positive = (x) -> x > 0
 
   it 'should omit all key-value pairs from array which value mathes given predicate', ->
-    (_.omit.values positive, kv).should.deep.equal {a: -1, b: 0}
+    (_.omit.values _.positive, kv).should.deep.equal {a: -1, b: 0}
 
 
 describe 'omit.keys', ->
@@ -188,13 +196,43 @@ describe 'omit.keys', ->
 
 describe 'find', ->
   xs = [-2, -1, 0, 4, 5]
-  positive = (x) -> x > 0
 
   it 'should return first element that satisfies given predicate', ->
-    (_.find positive, xs).should.equal 4
+    (_.find _.positive, xs).should.equal 4
 
   it 'should return undefined if none of the elements complies', ->
-    expect(_.find positive, [-1, -2, 0]).to.equal undefined
+    expect(_.find _.positive, [-1, -2, 0]).to.equal undefined
+
+
+describe 'find.keys', ->
+  kv = {a: 1, b: 2, c: 3}
+
+  it 'should return first element that satisfies given predicate', ->
+    (_.find.keys (_.equals 'a'), kv).should.deep.equal ['a', 1]
+
+  it 'should return undefined if none of the elements complies', ->
+    expect(_.find.keys (_.equals 'f'), kv).to.equal undefined
+
+
+describe 'find.values', ->
+  kv = {a: 1, b: 2, c: 3}
+
+  it 'should return first element that satisfies given predicate', ->
+    (_.find.values (_.equals 3), kv).should.deep.equal ['c', 3]
+
+  it 'should return undefined if none of the elements complies', ->
+    expect(_.find.values (_.equals 5), kv).to.equal undefined
+
+
+describe 'find.items', ->
+  kv = {a: 1, b: 2, c: 3, d: 'd'}
+  foo = (k, v) -> k is v
+
+  it 'should return first element that satisfies given predicate', ->
+    (_.find.items foo, kv).should.deep.equal ['d', 'd']
+
+  it 'should return undefined if none of the elements complies', ->
+    expect(_.find.items (_.gt 5), kv).to.equal undefined
 
 
 describe 'contains', -> 
