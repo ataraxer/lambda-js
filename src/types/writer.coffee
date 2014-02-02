@@ -17,21 +17,21 @@ class WriterClass
 Writer = (a, w) -> new WriterClass a, w
 
 
-functor Writer,
-  fmap: (f, {x, v}) ->
-    Writer (f x), v
+functor WriterClass,
+  fmap: (f, {a, w}) ->
+    Writer (f a), w
 
 
-applicative Writer,
-  fapply: ({f, v}, w) ->
-    fmap f, w
+applicative WriterClass,
+  fapply: ({a, w: v}, w) ->
+    fmap a, w
   pure: (x) -> Writer x, []
 
 
-monad Writer,
-  bind: (f, {x, v}) ->
-    {y, v_} = f x
-    Writer y, v.append v_
+monad WriterClass,
+  bind: (f, {a, w}) ->
+    {a: y, w: v_} = f a
+    Writer y, w.concat v_
   mreturn: (x) -> Writer x, []
 
 
