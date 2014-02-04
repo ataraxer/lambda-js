@@ -12,10 +12,19 @@ monad = lambda_class 'bind', 'mreturn'
 
 
 bind = def (f, o) ->
+  if o.__lambda__ and o.__lambda__.mreturn_wrap
+    o = o f.__lambda__.returns
   o.__lambda__.bind f, o
 
 
-mreturn = (x) -> (o) -> o.__lambda__.mreturn x
+mreturn = (x) ->
+  f = (o) -> o.prototype.__lambda__.mreturn x
+  f.__lambda__ = (_.extend mreturn_wrap: true) (f.__lambda__ or {})
+  return f
+
+returns = (o) -> (f) ->
+  f.__lambda__ = (_.extend returns: o) (f.__lambda__ or {})
+  return f
 
 
 # ====Instances====
@@ -29,3 +38,4 @@ module.exports = exports =
   monad: monad
   bind: bind
   mreturn: mreturn
+  returns: returns

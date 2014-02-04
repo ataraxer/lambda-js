@@ -12,7 +12,7 @@ expect = chai.expect
 # Module initialization
 
 _ = require '../src/lambda'
-{fapply} = require '../src/classes/applicative'
+{fapply, pure} = require '../src/classes/applicative'
 
 # Tests
 
@@ -22,3 +22,11 @@ describe 'Applicative', ->
 
   it 'should be an abstract container that can be mapped over with another container', ->
     ((fapply fs) xs).should.be.deep.equal [6, 7, 8, 10, 12, 14]
+
+
+describe 'pure', ->
+  fs = pure (_.add 1)
+  xs = [5, 6, 7]
+
+  it 'should wrap a function into a minimal context', ->
+    ((fapply fs) xs).should.be.deep.equal [6, 7, 8]
