@@ -12,12 +12,13 @@ lint   = require 'gulp-coffeelint'
 coffee = require 'gulp-coffee'
 mocha  = require 'gulp-mocha'
 clean  = require 'gulp-clean'
+git    = require 'gulp-git'
 
 
 # ==== CONSTANTS ====
 
 SOURCE_DIR   = 'src/'
-SOURCE_FILES = [SOURCE_DIR + '*.coffee']
+SOURCE_FILES = [SOURCE_DIR + '*.coffee', SOURCE_DIR + '*/*.coffee']
 
 BUILD_DIR   = 'build/'
 BUILD_FILES = [BUILD_DIR + '*.js']
@@ -30,6 +31,12 @@ TEST_FILES = [TEST_DIR + '*.coffee']
 
 gulp.task 'default', ->
   gulp.run('build')
+
+
+gulp.task 'push', ->
+  gulp.run('test')
+  gulp.src(['./']).
+    pipe(git.push())
 
 
 gulp.task 'build', ->

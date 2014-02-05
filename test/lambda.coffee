@@ -419,19 +419,21 @@ describe 'flatten', ->
     (_.flatten xs).should.deep.equal flat_xs
 
   it 'should leave array of non-arrays unchanged', ->
-    xs      = [1, 2, 3]
+    xs = [1, 2, 3]
     (_.flatten xs).should.deep.equal xs
-
-  it 'should combine array of objects into one by sequential extension', ->
-    xs      = [{a: 1}, {b: 2}, {c: 3}]
-    flat_xs = {a: 1, b: 2, c: 3}
-    (_.flatten xs).should.deep.equal flat_xs
 
   it 'should return empty array if its argument is not an array or an object', ->
     (_.flatten 1).should.deep.equal []
 
   it 'should return empty array if empty array is given as an argument', ->
     (_.flatten []).should.deep.equal []
+
+
+describe 'flatten.dict', ->
+  it 'should combine array of objects into one by sequential extension', ->
+    kv      = [{a: 1}, {b: 2}, {c: 3}]
+    flat_kv = {a: 1, b: 2, c: 3}
+    (_.flatten.dict kv).should.deep.equal flat_kv
 
 
 describe 'all', ->

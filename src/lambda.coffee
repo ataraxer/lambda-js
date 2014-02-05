@@ -52,6 +52,9 @@ _.curry = curry
 _.map = def (f, xs) ->
   f x for x in xs
 
+_.map.indexed = def (f, xs) ->
+  f x, i for x, i in xs
+
 _.map.items = def (f, kv) ->
   _.dict (f k, v for k, v of kv)
 
@@ -63,6 +66,9 @@ _.map.keys = def (f, kv) ->
 
 _.map.flat = def (f, xs) ->
   _.flatten (_.map f, xs)
+
+_.map.flat.indexed = def (f, xs) ->
+  _.flatten (_.map.indexed f, xs)
 
 
 _.filter = def (f, xs) ->
@@ -92,6 +98,10 @@ _.find = def (f, xs) ->
   for x in xs
     if f x then return x
 
+_.find.index = def (f, xs) ->
+  for x, i in xs
+    if f x then return i
+
 _.find.keys = def (f, kv) ->
   for k, v of kv
     if f k then return [k, v]
@@ -111,12 +121,8 @@ _.last = (xs) -> xs[xs.length-1]
 _.init = (xs) -> xs[0...-1]
 
 
-_.take = def (n, xs) ->
-  xs[..(n-1)]
-
-
-_.drop = def (n, xs) ->
-  xs[n..]
+_.take = def (n, xs) -> xs[..(n-1)] 
+_.drop = def (n, xs) -> xs[n..]
 
 
 _.equals = _.eq = def (a, b) -> a is b
@@ -194,79 +200,60 @@ _.reverse = (xs) ->
 
 
 # ==== MONOIDS ====
-_.add = (monoid 0) (a, b) ->
-  a + b
-
-
-_.multiply = (monoid 1) (a, b) ->
-  a * b
-
+_.add = (monoid 0) (a, b) -> a + b
+_.multiply = (monoid 1) (a, b) -> a * b
 
 _.concat = (monoid []) (xs, ys) ->
   Array.prototype.concat xs, ys
 
+_.and = (monoid true) (a, b) -> a and b
+_.or = (monoid false) (a, b) -> a or b
 
-_.and = (monoid true) (a, b) ->
-  a and b
-
-
-_.or = (monoid false) (a, b) ->
-  a or b
-
-
-_.max = (monoid -Infinity) (a, b) ->
-  Math.max a, b
-
-
-_.min = (monoid Infinity) (a, b) ->
-  Math.min a, b
-
+_.max = (monoid -Infinity) (a, b) -> Math.max a, b
+_.min = (monoid Infinity) (a, b) -> Math.min a, b
 
 _.extend = (monoid {}) (a, b) ->
   _.dict (_.reduce _.concat, (_.map _.items, [a, b]))
-
 
 _.combine = (monoid {}) (a, b) ->
   _.gather [a, b]
 # ==== END:MONOIDS ====
 
 
-_.reduce = def (m, xsd) ->
-  xs = if is_hash xsd then _.values xsd else xsd
+_.reduce = def (m, xs) ->
   if not xs.reduce? then return m.id
-  if _.length xsd > 0
-    xs.reduce m
-  else
-    xs.reduce m, m.id
+  xs.reduce m, m.id
+
+_.reduce.keys = def (m, kv) ->
+  _.reduce m, (_.keys kv)
+
+_.reduce.values = def (m, kv) ->
+  _.reduce m, (_.values kv)
 
 
 # ==== REDUCERS ====
 _.sum = (xsd) ->
   _.reduce _.add, xsd
 
-
 _.product = (xsd) ->
   _.reduce _.multiply, xsd
 
 
 _.flatten = (xs) ->
-  if (is_hash _.head xs) and (_.all is_hash, _.filter(_.equals(undefined), xs))
-    _.reduce _.extend, xs
-  else
-    _.reduce _.concat, xs
+  _.reduce _.concat, xs
+
+_.flatten.dict = (kv) ->
+  _.reduce _.extend, kv
 
 
 _.all = def (f, xs) ->
   _.reduce _.and, (_.map f, xs)
 
-
 _.any = def (f, xs) ->
   _.reduce _.or, (_.map f, xs)
 
-
 _.biggest = (xs) ->
   _.reduce _.max, xs
-
 
 _.smallest = (xs) ->
   _.reduce _.min, xs
@@ -330,9 +317,8 @@ _.apply = def (f, xs) ->
 
 _.zip = (f, a, b) ->
   action = (f_, a_, b_) ->
-    _.flatten (for ai, i in a_
-      for bi, j in b_ when i is j
-        f ai, bi)
+    for ae, i in a_ when (be = b_[i])?
+      f ae, be
   if arguments.length >= 3
     action f, a, b
   else (a, b) -> action f, a, b
