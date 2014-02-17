@@ -121,8 +121,18 @@ _.last = (xs) -> xs[xs.length-1]
 _.init = (xs) -> xs[0...-1]
 
 
-_.take = def (n, xs) -> xs[..(n-1)] 
+_.take = def (n, xs) -> xs[...n]
+
+_.take.while = def (f, xs) ->
+  for x, i in xs when not f x
+    return _.take(i, xs)
+
+
 _.drop = def (n, xs) -> xs[n..]
+
+_.drop.while = def (f, xs) ->
+  for x, i in xs when not f x
+    return _.drop(i, xs)
 
 
 _.equals = _.eq = def (a, b) -> a is b
@@ -315,7 +325,10 @@ _.apply = def (f, xs) ->
   f.apply undefined, xs
 
 
-_.zip = (f, a, b) ->
+_.zip = def (a, b) ->
+    [ae, be] for ae, i in a when (be = b[i])?
+
+_.zip.with = (f, a, b) ->
   action = (f_, a_, b_) ->
     for ae, i in a_ when (be = b_[i])?
       f ae, be

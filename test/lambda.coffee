@@ -136,12 +136,22 @@ describe 'filter.keys', ->
 
 describe 'zip', ->
 
-  it 'should zip two lists together resulting in list of pairs and apply a function to each pair', ->
-    (_.zip _.add, [1, 2, 3], [3, 2, 1]).should.be.deep.equal [4, 4, 4]
+  it 'should zip two lists together resulting in list of pairs', ->
+    (_.zip [1, 2, 3], [3, 2, 1]).should.be.deep.equal [[1, 3], [2, 2], [3, 1]]
 
   it 'should descard leftover elements from the longer input list', ->
-    (_.zip _.add, [1, 2], [3, 2, 1]).should.be.deep.equal [4, 4]
-    (_.zip _.add, [1, 2, 3], [3, 2]).should.be.deep.equal [4, 4]
+    (_.zip [1, 2], [3, 2, 1]).should.be.deep.equal [[1, 3], [2, 2]]
+    (_.zip [1, 2, 3], [3, 2]).should.be.deep.equal [[1, 3], [2, 2]]
+
+
+describe 'zip.with', ->
+
+  it 'should zip two lists together resulting in list of pairs and apply a function to each pair', ->
+    (_.zip.with _.add, [1, 2, 3], [3, 2, 1]).should.be.deep.equal [4, 4, 4]
+
+  it 'should descard leftover elements from the longer input list', ->
+    (_.zip.with _.add, [1, 2], [3, 2, 1]).should.be.deep.equal [4, 4]
+    (_.zip.with _.add, [1, 2, 3], [3, 2]).should.be.deep.equal [4, 4]
 
 
 describe 'uniq', ->
@@ -543,7 +553,7 @@ describe 'compose', ->
 describe 'group_by', ->
   xs = [1, 2, 3, 4, 5, 6]
   even = (x) -> x % 2 == 0
-  
+
   it 'should group items based on given function result', ->
     (_.group_by even, xs).should.be.deep.equal {true: [2, 4, 6], false: [1, 3, 5]}
     (_.group_by _.id, xs).should.be.deep.equal {1: [1], 2: [2], 3: [3], 4: [4], 5: [5], 6: [6]}
@@ -591,7 +601,7 @@ describe 'tail', ->
     _.tail(xs).should.deep.equal [2, 3]
 
   it 'should return empty array if array is empty', ->
-    (_.tail([])).should.deep.equal []
+    _.tail([]).should.deep.equal []
 
 
 describe 'init', ->
@@ -601,7 +611,43 @@ describe 'init', ->
     _.init(xs).should.deep.equal [1, 2]
 
   it 'should return empty array if array is empty', ->
-    (_.init([])).should.deep.equal []
+    _.init([]).should.deep.equal []
+
+
+describe 'take', ->
+  xs = [-2, -1, 0, 1, 2]
+
+  it 'should take first n elements of array', ->
+    _.take(3, xs).should.deep.equal [-2, -1, 0]
+
+  it 'should return a whole list if n is bigger then it\'s length', ->
+    _.take(15, xs).should.deep.equal xs
+
+
+describe 'take.while', ->
+  xs = [-2, -1, 0, 1, 2]
+
+  it 'should take elements of array as long as predicate returns true', ->
+    _.take.while((_.lt 0), xs).should.deep.equal [-2, -1]
+    _.take.while((_.lt -5), xs).should.deep.equal []
+
+
+describe 'drop', ->
+  xs = [-2, -1, 0, 1, 2]
+
+  it 'should drop first n elements of array', ->
+    _.drop(3, xs).should.deep.equal [1, 2]
+
+  it 'should return an empty list if n is bigger then it\'s length', ->
+    _.drop(15, xs).should.deep.equal []
+
+
+describe 'drop.while', ->
+  xs = [-2, -1, 0, 1, 2]
+
+  it 'should drop elements of array as long as predicate returns true', ->
+    _.drop.while((_.lt 0), xs).should.deep.equal [0, 1, 2]
+    _.drop.while((_.lt -5), xs).should.deep.equal xs
 
 
 describe 'relate', ->
