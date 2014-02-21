@@ -1,0 +1,392 @@
+#!/usr/bin/env lsc
+
+print = console.log.bind console, ">>>:"
+error = console.log.bind console, "ERROR:"
+warn  = console.log.bind console, "WARNING:"
+
+
+monoid = (id, op) -->
+  f = op
+  f.id = id; f
+
+keys = (xd) -->
+  [k for k, v of xd]
+
+values = (xd) -->
+  [v for k, v of xd]
+
+type = -> it?.@@?.name
+
+is-object = -> (is \Object) . type
+is-array  = -> (is \Array)  . type
+
+
+_ = {}
+
+
+_.dict = -> {[k, v] for [k, v] in it}
+
+_.keys = keys
+_.values = values
+
+
+_.map = (f, xs) -->
+  [f x for x in xs]
+
+_.map.indexed = (f, xs) -->
+  [f x i for x, i in xs]
+
+_.map.items = (f, kv) -->
+  {[(f k), v] for k, v of kv}
+
+_.map.values = (f, kv) -->
+  {[k, (f v k)] for k, v of kv}
+
+_.map.keys = (f, kv) -->
+  {[(f k v), v] for k, v of kv}
+
+_.map.flat =
+  _.map << _.flatten
+
+_.map.flat.indexed =
+  _.map.indexed <<  _.flatten
+
+
+_.filter = (f, xs) -->
+  [x for x in xs when f x]
+
+_.filter.values = (f, kv) -->
+  predicate = ([k, v]) -> f v, k
+  _.dict (_.filter predicate, (_.items kv))
+
+_.filter.keys = (f, kv) -->
+  predicate = ([k, v]) -> f k, v
+  _.dict (_.filter predicate, (_.items kv))
+
+
+_.omit = (f, xs) -->
+  _.filter (_.not f), xs
+
+_.omit.values = (f, kv) -->
+  _.filter.values (_.not f), kv
+
+_.omit.keys = (f, kv) -->
+  _.filter.keys (_.not f), kv
+
+
+_.find = (f, xs) -->
+  for x in xs
+    if f x then return x
+
+_.find.index = (f, xs) -->
+  for x, i in xs
+    if f x then return i
+
+_.find.keys = (f, kv) -->
+  for k, v of kv
+    if f k then return [k, v]
+
+_.find.values = (f, kv) -->
+  for k, v of kv
+    if f v then return [k, v]
+
+_.find.items = (f, kv) -->
+  for k, v of kv
+    if f k, v then return [k, v]
+
+
+_.head = --> it.0
+_.tail = --> it[1 to -1]
+_.last = --> it[* - 1]
+_.init = --> it[0 til -1]
+
+
+_.take = (n, xs) --> xs[...n]
+
+_.take.while = (f, xs) -->
+  for x, i in xs when not f x
+    return _.take(i, xs)
+
+
+_.drop = (n, xs) --> xs[n til]
+
+_.drop.while = (f, xs) -->
+  for x, i in xs when not f x
+    return _.drop(i, xs)
+
+
+_.equals = (is)
+
+_.gt = (>)
+_.ge = (>=)
+_.lt = (<)
+_.le = (<=)
+
+_.positive = (> 0)
+_.negative = (< 0)
+
+
+_.push = (x, xs) -->
+  _.concat xs, [x]
+
+
+_.length = -->
+  | is-object it =>
+    it |> _.length |> _.keys
+  | is-array  it =>
+    it.length
+  | _ => 0
+
+
+_.items = (kv) -->
+  [[k, v] for k, v of kv]
+
+
+_.dot = (k, kv) --> kv[k]
+
+_.dot.path = (ks, kv) -->
+  for k in ks
+    if not is-hash (kv = kv[k])
+      return undefined
+  return kv
+
+_.dot.mpath = (...ks) -> (kv) ->
+  _.dot.path ks, kv
+
+
+_.contains = (in)
+
+_.contains.values = (k, kv) -->
+  _.contains k, (_.values kv)
+
+_.contains.keys = (k, kv) -->
+  _.contains k, (_.keys kv)
+
+
+_.in = -> (in it)
+
+_.in.values = (kv, v) -->
+  _.in (_.values kv), v
+
+_.in.keys = (kv, v) -->
+  _.in (_.keys kv), v
+
+
+_.join = (v, xs) -->
+  xs.join v
+
+
+_.clone = _.copy = (obj) -->
+  deep-copy = ->
+    | (is-object it) => {[k, deep-copy v] for k, v of it}
+    | (is-array  it)  => [deep-copy i for i in it]
+    | _ => it
+
+
+_.reverse = _.clone >> (.reverse!)
+
+
+# ==== MONOIDS ====
+_.add      = (monoid 0) (+)
+_.multiply = (monoid 1) (*)
+
+_.concat = (monoid []) (++)
+
+_.and = (monoid true) (and)
+_.or  = (monoid false) (or)
+
+_.max = (monoid -Infinity) (a, b) --> Math.max ...
+_.min = (monoid  Infinity) (a, b) --> Math.min ...
+
+_.extend = (monoid {}) (a, b) -->
+  [a, b] |> _.map _.items |> _.reduce _.concat |> _.dict
+
+_.combine = (monoid {}) (a, b) -->
+  _.gather [a, b]
+# ==== END:MONOIDS ====
+
+
+_.reduce = (m, xs) -->
+  if not xs.reduce? then return m.id
+  xs.reduce m, m.id
+
+_.reduce.keys = (m, kv) -->
+  _.reduce m, (_.keys kv)
+
+_.reduce.values = (m, kv) -->
+  _.reduce m, (_.values kv)
+
+
+# ==== REDUCERS ====
+_.sum = (xsd) -->
+  _.reduce _.add, xsd
+
+_.product = (xsd) -->
+  _.reduce _.multiply, xsd
+
+
+_.flatten = (xs) -->
+  _.reduce _.concat, xs
+
+_.flatten.dict = (kv) -->
+  _.reduce _.extend, kv
+
+
+_.all = (f, xs) -->
+  _.reduce _.and, (_.map f, xs)
+
+_.any = (f, xs) -->
+  _.reduce _.or, (_.map f, xs)
+
+_.biggest = (xs) -->
+  _.reduce _.max, xs
+
+_.smallest = (xs) -->
+  _.reduce _.min, xs
+
+
+_.gather = (xs) -->
+  keys = _.uniq (_.map.flat _.keys) xs
+  get = (k) -->
+    values = (_.map _.dot k) (_.filter _.contains.keys k) xs
+    [k, values]
+  _.dict (_.map get) keys
+
+
+_.sequence = (xs) -->
+  keys = _.uniq (_.map.flat _.keys) xs
+  fill = _.fill keys
+  _.gather (_.map fill) xs
+# ==== END:REDUCERS ====
+
+
+_.average = (xs) -->
+  if (_.length xs) == 0 then 0
+  else (_.sum xs) / (_.length xs)
+
+
+_.not = (f) -> (...args) -> not (f ...args)
+
+
+_.is_number = (n) -->
+  (not isNaN (_.float n)) and (isFinite n)
+
+
+_.sort = (xs) -->
+  numbers = (_.map _.number) (_.filter _.is_number) xs
+  strings = (_.filter (_.not _.is_number)) xs
+
+  sorted_numbers = numbers.sort a, b -->
+    a - b
+  sorted_strings = strings.sort a, b -->
+    a.localeCompare b 
+
+  _.concat sorted_numbers, sorted_strings
+
+
+_.sort.by = (f) --> (xs) -->
+  xs.sort f
+
+
+_.pipe    = -> _.reduce (>>) &
+_.compose = -> _.reduce (<<) &
+
+
+_.apply = (f, xs) -->
+  f.apply null xs
+
+
+_.zip = (a, b) -->
+    [[ae, be] for ae, i in a when (be = b[i])?]
+
+_.zip.with = (f, a, b) -->
+  for ae, i in a when (be = b[i])?
+    f ae, be
+
+
+_.relate = (f, a, b) -->
+  [a b] |> _.sequence |> _.map.values (_.apply f)
+
+
+_.group_by = (f, xs) -->
+  result = {}
+  for x in xs
+    key = f x
+    result[key] = result[key] or []
+    result[key].push x
+  result
+
+
+_.range = (a, b, step = 1) -->
+  if b?
+  then [a to b by step]
+  else [0 til a]
+
+
+_.replace = (a, b, x) -->
+  if x is a then b else x
+
+
+_.uniq = (xs) -->
+  result = []
+  for x in xs when x not in result
+    result.push x
+  result
+
+
+_.union = (a, b) -->
+  _.uniq _.concat a, b
+
+
+_.intersection = (a, b) -->
+  (_.filter (x) --> x in a and x in b) _.union a, b
+
+
+_.difference = (a, b) -->
+  (_.filter (x) --> not (x in a and x in b)) _.union a, b
+
+
+_.fill = (xs, xd) -->
+  f = (x) --> [x, null]
+  fillers = _.dict (_.map f, xs)
+  _.extend fillers, xd
+
+# ==== PARSERS ====
+_.id = -> it
+
+
+_.int = (x) --> switch x
+  when false then 0
+  when true  then 1
+  else parseInt x, 10
+
+
+_.float  = (x) --> switch x
+  when false then 0.0
+  when true  then 1.0
+  else parseFloat x, 10
+
+
+_.number = (x) --> _.float x
+# ==== END:PARSERS ====
+
+_.empty = (xsd) -->
+  _.length xsd is 0
+
+
+_.print = (x) -->
+  console.log x
+  return x
+
+
+_.message = (msg) --> (x) -->
+  console.log msg, x
+  return x
+
+
+_.log = (f) --> (x) -->
+  console.log result = f x
+  return result
+
+
+module.exports = exports = _

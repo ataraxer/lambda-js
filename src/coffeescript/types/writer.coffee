@@ -3,6 +3,7 @@
 {functor, fmap} = require '../classes/functor'
 {applicative}   = require '../classes/applicative'
 {monad}         = require '../classes/monad'
+{mempty, mappend} = require '../classes/monoid'
 
 
 class WriterClass
@@ -31,8 +32,8 @@ applicative WriterClass,
 monad WriterClass,
   bind: (f, {a, w}) ->
     {a: y, w: v_} = f a
-    Writer y, w.concat v_
-  mreturn: (x) -> Writer x, []
+    Writer y, mappend w, v_
+  mreturn: (x) -> Writer x, mempty
 
 
 module.exports = exports =

@@ -10,7 +10,8 @@
     "gulp-util": "~2.2.10",
     "gulp-coffeelint": "~0.1.1",
     "gulp-clean": "~0.2.2",
-    "gulp-git": "~0.2.1"
+    "gulp-git": "~0.2.1",
+    "LiveScript": "^1.2.0"
   },
   "dependencies": {
     "moment": "~2.2.1",
