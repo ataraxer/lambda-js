@@ -9,47 +9,52 @@ monoid = (id, op) -->
   f = op
   f.id = id; f
 
-keys = (xd) -->
-  [k for k, v of xd]
-
-values = (xd) -->
-  [v for k, v of xd]
-
 type = -> it?.@@?.name
 
-is-object = -> (is \Object) . type
-is-array  = -> (is \Array)  . type
+is-object = (is \Object) . type
+is-array  = (is \Array)  . type
 
 
 _ = {}
 
+_.type = type
+_.is-object = is-object
+_.is-array  = is-array
 
-_.dict = -> {[k, v] for [k, v] in it}
 
-_.keys = keys
-_.values = values
+_.dict = ->
+  {[k, v] for [k, v] in it}
+
+_.keys = ->
+  [k for k, v of it]
+
+_.values = ->
+  [v for k, v of it]
+
+_.items = ->
+  [[k, v] for k, v of it]
 
 
 _.map = (f, xs) -->
   [f x for x in xs]
 
 _.map.indexed = (f, xs) -->
-  [f x i for x, i in xs]
+  [f x, i for x, i in xs]
 
 _.map.items = (f, kv) -->
-  {[(f k), v] for k, v of kv}
+  _.dict [f k, v for k, v of kv]
 
 _.map.values = (f, kv) -->
-  {[k, (f v k)] for k, v of kv}
+  {[k, (f v, k)] for k, v of kv}
 
 _.map.keys = (f, kv) -->
-  {[(f k v), v] for k, v of kv}
+  {[(f k, v), v] for k, v of kv}
 
-_.map.flat =
-  _.map << _.flatten
+_.map.flat = (f, kv) -->
+  _.flatten (_.map f, kv)
 
-_.map.flat.indexed =
-  _.map.indexed <<  _.flatten
+_.map.flat.indexed = (f, kv) -->
+  _.flatten (_.map.indexed f, kv)
 
 
 _.filter = (f, xs) -->
@@ -79,20 +84,20 @@ _.find = (f, xs) -->
     if f x then return x
 
 _.find.index = (f, xs) -->
-  for x, i in xs
-    if f x then return i
+  for x, i in xs when f x
+    return i
 
 _.find.keys = (f, kv) -->
-  for k, v of kv
-    if f k then return [k, v]
+  for k, v of kv when f k
+    return [k, v]
 
 _.find.values = (f, kv) -->
-  for k, v of kv
-    if f v then return [k, v]
+  for k, v of kv when f v
+    return [k, v]
 
 _.find.items = (f, kv) -->
-  for k, v of kv
-    if f k, v then return [k, v]
+  for k, v of kv when f k, v
+    return [k, v]
 
 
 _.head = --> it.0
@@ -101,26 +106,26 @@ _.last = --> it[* - 1]
 _.init = --> it[0 til -1]
 
 
-_.take = (n, xs) --> xs[...n]
+_.take = (n, xs) --> xs[til n]
 
 _.take.while = (f, xs) -->
   for x, i in xs when not f x
-    return _.take(i, xs)
+    return _.take i, xs
 
 
 _.drop = (n, xs) --> xs[n til]
 
 _.drop.while = (f, xs) -->
   for x, i in xs when not f x
-    return _.drop(i, xs)
+    return _.drop i, xs
 
 
 _.equals = (is)
 
-_.gt = (>)
-_.ge = (>=)
-_.lt = (<)
-_.le = (<=)
+_.gt = (x) -> (> x)
+_.ge = (x) -> (>= x)
+_.lt = (x) -> (< x)
+_.le = (x) -> (<= x)
 
 _.positive = (> 0)
 _.negative = (< 0)
@@ -130,16 +135,12 @@ _.push = (x, xs) -->
   _.concat xs, [x]
 
 
-_.length = -->
+_.length = ->
   | is-object it =>
-    it |> _.length |> _.keys
+    it |> _.keys |> _.length
   | is-array  it =>
     it.length
   | _ => 0
-
-
-_.items = (kv) -->
-  [[k, v] for k, v of kv]
 
 
 _.dot = (k, kv) --> kv[k]
@@ -163,7 +164,7 @@ _.contains.keys = (k, kv) -->
   _.contains k, (_.keys kv)
 
 
-_.in = -> (in it)
+_.in = (xs, k) --> (k in xs)
 
 _.in.values = (kv, v) -->
   _.in (_.values kv), v
@@ -176,11 +177,10 @@ _.join = (v, xs) -->
   xs.join v
 
 
-_.clone = _.copy = (obj) -->
-  deep-copy = ->
-    | (is-object it) => {[k, deep-copy v] for k, v of it}
-    | (is-array  it)  => [deep-copy i for i in it]
-    | _ => it
+_.clone = _.copy = ->
+  | (is-object it) => {[k, _.copy v] for k, v of it}
+  | (is-array  it)  => [_.copy i for i in it]
+  | _ => it
 
 
 _.reverse = _.clone >> (.reverse!)
@@ -190,13 +190,14 @@ _.reverse = _.clone >> (.reverse!)
 _.add      = (monoid 0) (+)
 _.multiply = (monoid 1) (*)
 
-_.concat = (monoid []) (++)
+_.concat = (monoid []) (a, b) ->
+  Array.prototype.concat a, b
 
 _.and = (monoid true) (and)
 _.or  = (monoid false) (or)
 
-_.max = (monoid -Infinity) (a, b) --> Math.max ...
-_.min = (monoid  Infinity) (a, b) --> Math.min ...
+_.max = (monoid -Infinity) (a, b) --> Math.max a, b
+_.min = (monoid  Infinity) (a, b) --> Math.min a, b
 
 _.extend = (monoid {}) (a, b) -->
   [a, b] |> _.map _.items |> _.reduce _.concat |> _.dict
@@ -207,8 +208,8 @@ _.combine = (monoid {}) (a, b) -->
 
 
 _.reduce = (m, xs) -->
-  if not xs.reduce? then return m.id
-  xs.reduce m, m.id
+  | not xs.reduce? => m.id
+  | _ => xs.reduce m, m.id
 
 _.reduce.keys = (m, kv) -->
   _.reduce m, (_.keys kv)
@@ -238,19 +239,19 @@ _.all = (f, xs) -->
 _.any = (f, xs) -->
   _.reduce _.or, (_.map f, xs)
 
-_.biggest = (xs) -->
-  _.reduce _.max, xs
+_.biggest = ->
+  _.reduce _.max, it
 
-_.smallest = (xs) -->
-  _.reduce _.min, xs
+_.smallest = ->
+  _.reduce _.min, it
 
 
-_.gather = (xs) -->
-  keys = _.uniq (_.map.flat _.keys) xs
-  get = (k) -->
-    values = (_.map _.dot k) (_.filter _.contains.keys k) xs
-    [k, values]
-  _.dict (_.map get) keys
+_.gather = (xs) ->
+  ks = _.uniq (_.map.flat _.keys, xs)
+  get = (k) ->
+    vs = (_.filter (_.contains.keys k)) >> (_.map (_.dot k))
+    [k, vs xs]
+  _.dict (_.map get, ks)
 
 
 _.sequence = (xs) -->
@@ -260,9 +261,9 @@ _.sequence = (xs) -->
 # ==== END:REDUCERS ====
 
 
-_.average = (xs) -->
-  if (_.length xs) == 0 then 0
-  else (_.sum xs) / (_.length xs)
+_.average = ->
+  | _.empty it => 0
+  | _ => (_.sum it) / (_.length it)
 
 
 _.not = (f) -> (...args) -> not (f ...args)
@@ -288,8 +289,8 @@ _.sort.by = (f) --> (xs) -->
   xs.sort f
 
 
-_.pipe    = -> _.reduce (>>) &
-_.compose = -> _.reduce (<<) &
+_.pipe    = (...fs) -> fs.reduce (>>)
+_.compose = (...fs) -> fs.reduce (<<)
 
 
 _.apply = (f, xs) -->
@@ -305,7 +306,7 @@ _.zip.with = (f, a, b) -->
 
 
 _.relate = (f, a, b) -->
-  [a b] |> _.sequence |> _.map.values (_.apply f)
+  [a, b] |> _.sequence |> _.map.values (_.apply f)
 
 
 _.group_by = (f, xs) -->
@@ -318,9 +319,8 @@ _.group_by = (f, xs) -->
 
 
 _.range = (a, b, step = 1) -->
-  if b?
-  then [a to b by step]
-  else [0 til a]
+  | b? => [a to b by step]
+  | _  => [0 til a]
 
 
 _.replace = (a, b, x) -->
@@ -339,54 +339,52 @@ _.union = (a, b) -->
 
 
 _.intersection = (a, b) -->
-  (_.filter (x) --> x in a and x in b) _.union a, b
+  (_.filter (x) -> x in a and x in b) _.union a, b
 
 
 _.difference = (a, b) -->
-  (_.filter (x) --> not (x in a and x in b)) _.union a, b
+  (_.filter (x) -> not (x in a and x in b)) _.union a, b
 
 
 _.fill = (xs, xd) -->
-  f = (x) --> [x, null]
-  fillers = _.dict (_.map f, xs)
-  _.extend fillers, xd
+  _.extend {[x, null] for x in xs}, xd
 
 # ==== PARSERS ====
 _.id = -> it
 
 
-_.int = (x) --> switch x
-  when false then 0
-  when true  then 1
-  else parseInt x, 10
+_.int = ->
+  | it is false => 0
+  | it is true  => 1
+  | _ => parseInt x, 10
 
 
-_.float  = (x) --> switch x
-  when false then 0.0
-  when true  then 1.0
-  else parseFloat x, 10
+_.float  = ->
+  | it is false => 0.0
+  | it is true  => 1.0
+  | _ => parseFloat x, 10
 
 
 _.number = (x) --> _.float x
 # ==== END:PARSERS ====
 
-_.empty = (xsd) -->
-  _.length xsd is 0
+_.empty = -> (_.length it) is 0
 
 
-_.print = (x) -->
+_.print = (x) ->
   console.log x
   return x
 
 
-_.message = (msg) --> (x) -->
+_.message = (msg, x) -->
   console.log msg, x
   return x
 
 
-_.log = (f) --> (x) -->
+_.log = (f, x) -->
   console.log result = f x
   return result
 
 
 module.exports = exports = _
+
