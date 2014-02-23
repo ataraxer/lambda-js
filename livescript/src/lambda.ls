@@ -173,10 +173,6 @@ _.in.keys = (kv, v) -->
   _.in (_.keys kv), v
 
 
-_.join = (v, xs) -->
-  xs.join v
-
-
 _.clone = _.copy = ->
   | (is-object it) => {[k, _.copy v] for k, v of it}
   | (is-array  it)  => [_.copy i for i in it]
@@ -384,6 +380,29 @@ _.message = (msg, x) -->
 _.log = (f, x) -->
   console.log result = f x
   return result
+
+# ==== STRINGS ====
+_.join = (v, xs) -->
+  xs.join v
+
+_.split = (s, str) -->
+  str.split s
+
+
+_.uppercase = (str) ->
+  str.toUpperCase!
+
+_.lowercase = (str) ->
+  str.toLowerCase!
+
+_.capitalize = (str) ->
+  (_.uppercase (_.head str)) + (str.slice 1)
+
+
+_.substitute = (a, b, str) -->
+  str.replace a, b
+
+_.sub = _.substitute
 
 
 module.exports = exports = _
