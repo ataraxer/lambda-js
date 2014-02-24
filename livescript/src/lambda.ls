@@ -9,7 +9,16 @@ monoid = (id, op) -->
   f = op
   f.id = id; f
 
-type = -> it?.@@?.name
+type = do ->
+  cname = -> it?.constructor?.name
+  detect-NaN = -> (cname it) is \Number and (isNaN it)
+
+  ->
+    | it is null => \Null
+    | it is undefined => \Undefined
+    | detect-NaN it => \NaN
+    | _ => cname it
+
 
 is-object = (is \Object) . type
 is-array  = (is \Array)  . type
@@ -23,7 +32,7 @@ _.is-array  = is-array
 
 
 _.dict = ->
-  {[k, v] for [k, v] in it}
+  {[k, v] for [k, v]:pair in it}
 
 _.keys = ->
   [k for k, v of it]

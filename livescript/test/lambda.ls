@@ -1,3 +1,4 @@
+#!/usr/bin/env lsc
 # This file provides tests for `Lambda` module.
 
 # Importing `assert` from `mocha` node module.
@@ -13,6 +14,65 @@ expect = chai.expect
 # to simplify code.
 
 _ = require '../src/lambda'
+
+
+# Helpers
+
+describe 'type', ->
+  class Foobar
+
+  specify 'should safely get the name of the object\'s constructor', ->
+    (_.type false).should.equal \Boolean
+    (_.type true).should.equal \Boolean
+    (_.type 1).should.equal \Number
+    (_.type 'string').should.equal \String
+    (_.type [1 2 3]).should.equal \Array
+    (_.type []).should.equal \Array
+    (_.type {a: 1, b: 2}).should.equal \Object
+    (_.type {}).should.equal \Object
+    (_.type (new Date!)).should.equal \Date
+    (_.type (new Foobar!)).should.equal \Foobar
+
+  specify 'should return `Null` for null', ->
+    (_.type null).should.equal \Null
+
+  specify 'should return `Undefined` for undefined', ->
+    (_.type undefined).should.equal \Undefined
+
+  specify 'should return `NaN` for NaN', ->
+    (_.type NaN).should.equal \NaN
+
+
+describe 'is-object', ->
+  class Foobar
+
+  not-objs = [false, true, 1, 'string', [1 2 3], [], new Date!, new Foobar!]
+  objs = [{a: 1, b: 2}, {}, new Object!]
+
+  specify 'should check whether value is a pure object', ->
+    (_.all _.is-object, objs).should.equal.true
+    (_.any _.is-object, not-objs).should.equal.false
+
+
+describe 'is-array', ->
+  class Foobar
+
+  not-arrs = [
+    false, true, 1, 'string', new Date!, new Foobar!,
+    {a: 1, b: 2}, {}, new Object!
+  ]
+  arrs = [[1 2 3], []]
+
+  specify 'should check whether value is an array', ->
+    (_.all _.is-array, arrs).should.equal.true
+    (_.any _.is-array, not-arrs).should.equal.false
+
+
+describe 'dict', ->
+
+  specify 'should convert an array of pairs to object', ->
+    (_.dict [[\a, 1], [\b, 2]]).should.deep.equal {a: 1, b: 2}
+    (_.dict []).should.deep.equal {}
 
 
 # Data structures manipulations
