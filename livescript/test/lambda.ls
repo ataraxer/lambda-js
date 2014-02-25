@@ -50,7 +50,7 @@ describe 'is-object', ->
   objs = [{a: 1, b: 2}, {}, new Object!]
 
   specify 'should check whether value is a pure object', ->
-    (_.all _.is-object, objs).should.equal.true
+    (_.all _.is-object, objs).should.be.equal true
     (_.any _.is-object, not-objs).should.equal.false
 
 
@@ -64,7 +64,7 @@ describe 'is-array', ->
   arrs = [[1 2 3], []]
 
   specify 'should check whether value is an array', ->
-    (_.all _.is-array, arrs).should.equal.true
+    (_.all _.is-array, arrs).should.be.equal true
     (_.any _.is-array, not-arrs).should.equal.false
 
 
@@ -265,20 +265,20 @@ describe 'find.keys', ->
   kv = {a: 1, b: 2, c: 3}
 
   specify 'should return first element that satisfies given predicate', ->
-    (_.find.keys (_.equals 'a'), kv).should.deep.equal ['a', 1]
+    (_.find.keys (is \a), kv).should.deep.equal ['a', 1]
 
   specify 'should return undefined if none of the elements complies', ->
-    expect(_.find.keys (_.equals 'f'), kv).to.equal undefined
+    expect(_.find.keys (is \f), kv).to.equal undefined
 
 
 describe 'find.values', ->
   kv = {a: 1, b: 2, c: 3}
 
   specify 'should return first element that satisfies given predicate', ->
-    (_.find.values (_.equals 3), kv).should.deep.equal ['c', 3]
+    (_.find.values (is 3), kv).should.deep.equal ['c', 3]
 
   specify 'should return undefined if none of the elements complies', ->
-    expect(_.find.values (_.equals 5), kv).to.equal undefined
+    expect(_.find.values (is 5), kv).to.equal undefined
 
 
 describe 'find.items', ->
@@ -702,6 +702,17 @@ describe 'drop.while', ->
     _.drop.while((_.lt -5), xs).should.deep.equal xs
 
 
+describe 'equals', ->
+  vals = [true, false, 0, 1, undefined, null, [], [1 2 3], {}, {a: 1, b: 2}]
+  self-eq = -> _.eq it, it
+
+  specify 'should strictly check value equality', ->
+    (_.all self-eq, vals).should.be.equal true
+
+  specify 'should correctly check equality for NaN', ->
+    (self-eq NaN).should.be.equal true
+
+
 describe 'relate', ->
   a = {a: 1, b: 2, c: 3}
   b = {b: 4, c: 5, d: 6}
@@ -709,3 +720,4 @@ describe 'relate', ->
 
   specify 'should sequence two objects and apply binary function to every element', ->
     (_.relate f, a, b).should.be.deep.equal {a: 0, b: 8, c: 15, d: 0}
+

@@ -20,8 +20,10 @@ type = do ->
     | _ => cname it
 
 
-is-object = (is \Object) . type
-is-array  = (is \Array)  . type
+is-object  = (is \Object) . type
+is-array   = (is \Array)  . type
+is-number  = (is \Number) . type
+not-number = (is \NaN)    . type
 
 
 _ = {}
@@ -129,7 +131,9 @@ _.drop.while = (f, xs) -->
     return _.drop i, xs
 
 
-_.equals = (is)
+_.eq = (a, b) -->
+  | not-number a => not-number b
+  | _ => a is b
 
 _.gt = (x) -> (> x)
 _.ge = (x) -> (>= x)
@@ -274,20 +278,8 @@ _.average = ->
 _.not = (f) -> (...args) -> not (f ...args)
 
 
-_.is_number = (n) -->
-  (not isNaN (_.float n)) and (isFinite n)
-
-
 _.sort = (xs) -->
-  numbers = (_.map _.number) (_.filter _.is_number) xs
-  strings = (_.filter (_.not _.is_number)) xs
-
-  sorted_numbers = numbers.sort a, b -->
-    a - b
-  sorted_strings = strings.sort a, b -->
-    a.localeCompare b 
-
-  _.concat sorted_numbers, sorted_strings
+  ...
 
 
 _.sort.by = (f) --> (xs) -->
