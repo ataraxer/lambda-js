@@ -75,6 +75,31 @@ describe 'dict', ->
     (_.dict []).should.deep.equal {}
 
 
+describe 'keys', ->
+  kv = {a: 1, b: 2, c: 3}
+
+  specify 'should return a list of object\'s keys', ->
+    # FIXME: don't depend on order!
+    (_.keys kv).should.be.deep.equal [\a \b \c]
+    (_.keys {}).should.be.deep.equal []
+
+
+describe 'values', ->
+  kv = {a: 1, b: 2, c: 3}
+
+  specify 'should return a list of object\'s values', ->
+    (_.values kv).should.be.deep.equal [1 2 3]
+    (_.values {}).should.be.deep.equal []
+
+
+describe 'items', ->
+  kv = {a: 1, b: 2, c: 3}
+
+  specify 'should return a list of object\'s items', ->
+    (_.items kv).should.be.deep.equal [[\a 1] [\b 2] [\c 3]]
+    (_.items {}).should.be.deep.equal []
+
+
 # Data structures manipulations
 
 describe 'map', ->
@@ -577,8 +602,7 @@ describe 'smallest', ->
 
   # XXX: should I fix that behaviour?
   specify 'should return Infinity if given array is empty', ->
-    (_.smallest []).should.equal Infinity
-
+    (_.smallest []).should.equal Infinity 
 
 # Function Composspecifyion
 
@@ -702,7 +726,7 @@ describe 'drop.while', ->
     _.drop.while((_.lt -5), xs).should.deep.equal xs
 
 
-describe 'equals', ->
+describe 'eq', ->
   vals = [true, false, 0, 1, undefined, null, [], [1 2 3], {}, {a: 1, b: 2}]
   self-eq = -> _.eq it, it
 
@@ -720,4 +744,19 @@ describe 'relate', ->
 
   specify 'should sequence two objects and apply binary function to every element', ->
     (_.relate f, a, b).should.be.deep.equal {a: 0, b: 8, c: 15, d: 0}
+
+
+describe 'join', ->
+  xs = [\a \b \c]
+
+  specify 'should join elements of array into string with a given delimiter', ->
+    (_.join ':', xs).should.be.equal 'a:b:c'
+    (_.join '-', xs).should.be.equal 'a-b-c'
+
+
+describe 'split', ->
+  str = 'a:b:c'
+
+  specify 'should split a string on a given delimiter', ->
+    (_.split ':', str).should.be.deep.equal [\a \b \c]
 

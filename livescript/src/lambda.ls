@@ -384,24 +384,22 @@ _.log = (f, x) -->
 
 # ==== STRINGS ====
 _.join = (v, xs) -->
-  xs.join v
+  xs?.join? v
 
 _.split = (s, str) -->
-  str.split s
+  str?.split? s
 
 
-_.uppercase = (str) ->
-  str.toUpperCase!
+_.uppercase = -> it?.toUpperCase!
 
-_.lowercase = (str) ->
-  str.toLowerCase!
+_.lowercase = -> it?.toLowerCase!
 
-_.capitalize = (str) ->
-  (_.uppercase (_.head str)) + (str.slice 1)
+_.capitalize = ->
+  (_.uppercase (_.head it)) + (it?.slice? 1)
 
 
 _.substitute = (a, b, str) -->
-  str.replace a, b
+  str?.replace a, b
 
 _.sub = _.substitute
 
