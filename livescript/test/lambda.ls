@@ -760,3 +760,32 @@ describe 'split', ->
   specify 'should split a string on a given delimiter', ->
     (_.split ':', str).should.be.deep.equal [\a \b \c]
 
+
+describe 'uppercase', ->
+  specify 'should convert to uppercase every alphabetical char in a string', ->
+    (_.uppercase 'the quick brown fox').should.be.equal 'THE QUICK BROWN FOX'
+    (_.uppercase 'The Quick Brown Fox').should.be.equal 'THE QUICK BROWN FOX'
+    (_.uppercase 'The-Quick-Brown-Fox').should.be.equal 'THE-QUICK-BROWN-FOX'
+    (_.uppercase 'THE-QUICK-BROWN-FOX').should.be.equal 'THE-QUICK-BROWN-FOX'
+
+
+describe 'lowercase', ->
+  specify 'should convert to lowercase every alphabetical char in a string', ->
+    (_.lowercase 'the quick brown fox').should.be.equal 'the quick brown fox'
+    (_.lowercase 'The Quick Brown Fox').should.be.equal 'the quick brown fox'
+    (_.lowercase 'The-Quick-Brown-Fox').should.be.equal 'the-quick-brown-fox'
+    (_.lowercase 'THE-QUICK-BROWN-FOX').should.be.equal 'the-quick-brown-fox'
+
+
+describe 'capitalize', ->
+  specify 'should convert first character of a string to uppercase version', ->
+    (_.capitalize 'the quick brown fox').should.be.equal 'The quick brown fox'
+
+
+describe 'substitute', ->
+  specify 'should replace all occurances of a substring with provided substitute', ->
+    (_.substitute 'foo', 'bar', 'foobar').should.be.equal 'barbar'
+
+  specify 'should optionally accept a regex as a first argument', ->
+    (_.substitute /(fo+)(.*)/, '$2$1', 'foobar').should.be.equal 'barfoo'
+
