@@ -737,6 +737,28 @@ describe 'eq', ->
     (self-eq NaN).should.be.equal true
 
 
+describe 'length', ->
+  specify 'should count number of elements in an array', ->
+    (_.length [1 2 3]).should.be.equal 3
+    (_.length []).should.be.equal 0
+
+  specify 'should count number of key-value pairs in an object', ->
+    (_.length {a: 1, b: 2, c: 3}).should.be.equal 3
+    (_.length {}).should.be.equal 0
+
+
+describe 'dot', ->
+  specify 'should get value of specified key in an object', ->
+    (_.dot 'foo', {foo: 'bar'}).should.be.equal 'bar'
+    expect(_.dot 'foo', {}).equal undefined
+
+
+describe 'dot.path', ->
+  specify 'should perform consecutive dot by path', ->
+    (_.dot.path [\a \b \c], {a: b: c: 'val'}).should.be.equal 'val'
+    expect(_.dot.path [\a \b \c], {a: b: 'val'}).equal undefined
+
+
 describe 'relate', ->
   a = {a: 1, b: 2, c: 3}
   b = {b: 4, c: 5, d: 6}

@@ -158,11 +158,8 @@ _.length = ->
 
 _.dot = (k, kv) --> kv[k]
 
-_.dot.path = (ks, kv) -->
-  for k in ks
-    if not is-hash (kv = kv[k])
-      return undefined
-  return kv
+_.dot.path = (ks, kv ? {}) -->
+  kv |> _.pipe ...(_.map _.dot, ks)
 
 _.dot.mpath = (...ks) -> (kv) ->
   _.dot.path ks, kv
