@@ -350,6 +350,22 @@ describe 'in', ->
     (_.in xs, 'baz').should.equal false
 
 
+describe 'in.values', -> 
+  kv = { foo: 1, bar: 2, apple: 3, orange: 4 }
+
+  specify 'should check if object\'s values contain item', ->
+    (_.in.values kv, 2).should.equal true
+    (_.in.values kv, 5).should.equal false
+
+
+describe 'in.keys', -> 
+  kv = { foo: 1, bar: 2, apple: 3, orange: 4 }
+
+  specify 'should check if object\'s keys contain item', ->
+    (_.in.keys kv, 'bar').should.equal true
+    (_.in.keys kv, 'baz').should.equal false
+
+
 describe 'clone', ->
   original_source = {a: 1, b: {foo: 'bar', baz: [1, 2, 3]}}
 
@@ -364,6 +380,13 @@ describe 'clone', ->
     source.should.not.deep.equal original_source
     # but copy remains the same
     copy.should.deep.equal original_source
+
+
+describe 'reverse', ->
+  xs = [1 2 3 4]
+  specify 'should return reversed array without changing the original', ->
+    (_.reverse xs).should.be.deep.equal [4 3 2 1]
+    xs.should.be.deep.equal [1 2 3 4]
 
 
 # Monoids
