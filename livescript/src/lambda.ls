@@ -272,23 +272,12 @@ _.average = ->
   | _ => (_.sum it) / (_.length it)
 
 
-_.not = (f) -> (...args) -> not (f ...args)
-
-
 _.sort = (xs) -->
   ...
 
 
 _.sort.by = (f) --> (xs) -->
   xs.sort f
-
-
-_.pipe    = (...fs) -> fs.reduce (>>)
-_.compose = (...fs) -> fs.reduce (<<)
-
-
-_.apply = (f, xs) -->
-  f.apply null xs
 
 
 _.zip = (a, b) -->
@@ -378,27 +367,6 @@ _.message = (msg, x) -->
 _.log = (f, x) -->
   console.log result = f x
   return result
-
-# ==== STRINGS ====
-_.join = (v, xs) -->
-  xs?.join? v
-
-_.split = (s, str) -->
-  str?.split? s
-
-
-_.uppercase = -> it?.toUpperCase!
-
-_.lowercase = -> it?.toLowerCase!
-
-_.capitalize = ->
-  (_.uppercase (_.head it)) + (it?.slice? 1)
-
-
-_.substitute = (a, b, str) -->
-  str?.replace a, b
-
-_.sub = _.substitute
 
 
 module.exports = exports = _
