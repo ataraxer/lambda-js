@@ -1,6 +1,6 @@
 #!/usr/bin/env lsc
 
-_ = require './lambda'
+_ = require './prelude/lambda'
 
 
 failed = (_.in [\Undefined \Null]) . _.type

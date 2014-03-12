@@ -10,6 +10,8 @@ _.not = (f) -> (...args) -> not (f ...args)
 
 _.apply = (f, xs) --> f.apply null, xs
 
+_.curry = curry$
+
 
 module.exports = exports = _
 
